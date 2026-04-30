@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Kreator Misi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --hero-purple: #51497f;
+      --hero-gold: #FFD700;
+      --hero-dark: #2c254a;
+      --hero-light: #f0efff;
+    }
+
+    body {
+      align-items: center;
+      background: radial-gradient(circle, #a49fd1 0%, #51497f 100%);
+      color: #2c254a;
+      display: flex;
+      font-family: "Nunito", sans-serif;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .register-card {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 40px;
+      box-shadow: 0 15px 0 var(--hero-dark);
+      box-sizing: border-box;
+      max-width: 520px;
+      padding: 40px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .register-icon {
+      font-size: 70px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 42px;
+      letter-spacing: 1px;
+      margin: 10px 0 6px;
+    }
+
+    .subtitle {
+      color: #655d7d;
+      font-weight: 900;
+      margin: 0 0 24px;
+    }
+
+    .input-power {
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-sizing: border-box;
+      font-family: "Nunito", sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .input-power:focus {
+      border-color: var(--hero-gold);
+      box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.28);
+      outline: none;
+    }
+
+    .btn-row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+      margin-top: 4px;
+    }
+
+    .btn-hero {
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      cursor: pointer;
+      display: inline-block;
+      font-family: "Bangers", cursive;
+      font-size: 22px;
+      padding: 15px 25px;
+      text-align: center;
+      text-decoration: none;
+      transition: 0.1s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btn-hero.secondary {
+      background: white;
+    }
+
+    .btn-hero:active {
+      box-shadow: 0 3px 0 var(--hero-purple);
+      transform: translateY(3px);
+    }
+
+    .status {
+      background: var(--hero-light);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      color: var(--hero-purple);
+      display: none;
+      font-weight: 900;
+      margin-top: 18px;
+      padding: 12px;
+    }
+
+    .status.is-open {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 20px; }
+      .register-card { border-radius: 30px; padding: 28px 22px; }
+      h1 { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="register-card">
+    <div class="register-icon">📝</div>
+    <h1>DAFTAR KREATOR</h1>
+    <p class="subtitle">Lengkapi data kreator untuk mulai membuat misi belajar.</p>
+
+    <form id="creatorForm" onsubmit="submitCreator(event)" novalidate>
+      <input id="emailInput" type="email" class="input-power" placeholder="EMAIL BELAJAR.ID...">
+      <input id="nameInput" type="text" class="input-power" placeholder="NAMA LENGKAP...">
+      <input id="schoolInput" type="text" class="input-power" placeholder="ASAL SEKOLAH...">
+      <input id="districtInput" type="text" class="input-power" placeholder="KECAMATAN...">
+      <div class="btn-row">
+        <button id="submitBtn" type="submit" class="btn-hero">SIMPAN PENDAFTARAN!</button>
+        <a class="btn-hero secondary" href="index.html">KEMBALI KE LOGIN</a>
+      </div>
+    </form>
+
+    <div id="statusBox" class="status"></div>
+  </main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+
+    function callApi(action, payload = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const params = new URLSearchParams({
+          action,
+          payload: JSON.stringify(payload),
+          callback: callbackName
+        });
+
+        window[callbackName] = (response) => {
+          delete window[callbackName];
+          script.remove();
+
+          if (response && response.success) resolve(response.data);
+          else reject(new Error((response && response.error) || 'API gagal dipanggil.'));
+        };
+
+        script.onerror = () => {
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Tidak dapat menghubungi API. Periksa API_URL dan deployment Apps Script.'));
+        };
+
+        script.src = API_URL + '?' + params.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function isBelajarEmail(email) {
+      return /^[^\s@]+@[a-z0-9.-]+\.belajar\.id$/i.test(email.trim());
+    }
+
+    function showStatus(message, type) {
+      const box = document.getElementById('statusBox');
+      box.className = 'status is-open';
+      box.innerText = message;
+      box.style.borderColor = type === 'danger' ? '#ff4757' : type === 'warning' ? '#ffc107' : 'var(--hero-purple)';
+    }
+
+    function getPayload() {
+      return {
+        email: document.getElementById('emailInput').value.trim().toLowerCase(),
+        namaLengkap: document.getElementById('nameInput').value.trim(),
+        asalSekolah: document.getElementById('schoolInput').value.trim(),
+        kecamatan: document.getElementById('districtInput').value.trim()
+      };
+    }
+
+    function validatePayload(payload) {
+      if (!payload.email || !payload.namaLengkap || !payload.asalSekolah || !payload.kecamatan) {
+        showStatus('Lengkapi Email, Nama Lengkap, Asal Sekolah, dan Kecamatan.', 'warning');
+        return false;
+      }
+
+      if (!isBelajarEmail(payload.email)) {
+        showStatus('Email harus memakai domain .belajar.id.', 'warning');
+        return false;
+      }
+
+      return true;
+    }
+
+    async function submitCreator(event) {
+      event.preventDefault();
+      const payload = getPayload();
+      if (!validatePayload(payload)) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = 'MENYIMPAN...';
+
+      try {
+        const res = await callApi('registerCreator', payload);
+        showStatus((res && res.message) || 'Pendaftaran kreator berhasil disimpan.', 'success');
+        document.getElementById('creatorForm').reset();
+      } catch (err) {
+        showStatus('Gagal mendaftar kreator: ' + (err.message || err), 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'SIMPAN PENDAFTARAN!';
+      }
+    }
+  </script>
+</body>
+</html>
