@@ -397,7 +397,7 @@
         <p class="home-subtitle">Pilih ruang yang ingin kamu masuki untuk membuat misi, memainkan misi, atau membaca panduan penggunaan.</p>
 
         <div class="menu-grid">
-          <a id="creatorLink" class="menu-card" href="login.html">
+          <a id="creatorLink" class="menu-card" href="kreator.html">
             <div class="menu-icon">🛠️</div>
             <h2 class="menu-title">RUANG KREATOR</h2>
             <p class="menu-text">Masuk sebagai kreator untuk membuat dan mengelola misi belajar.</p>
@@ -435,7 +435,7 @@
       return page + '.html';
     }
 
-    document.getElementById('creatorLink').href = resolvePageUrl('login');
+    document.getElementById('creatorLink').href = resolvePageUrl('kreator');
     document.getElementById('playerLink').href = resolvePageUrl('game');
 
     function toggleGuide() {

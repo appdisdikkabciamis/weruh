@@ -88,7 +88,7 @@ function doGet(e) {
   ensureKreatorSheet_();
 
   const requestedPage = e && e.parameter ? e.parameter.page : '';
-  const allowedPages = ['index', 'login', 'game', 'daftar', 'login-pemain', 'daftar-pemain'];
+  const allowedPages = ['index', 'kreator', 'game', 'daftar', 'login-pemain', 'daftar-pemain'];
   const page = allowedPages.indexOf(requestedPage) !== -1 ? requestedPage : 'index';
 
   return HtmlService.createTemplateFromFile(page).evaluate()

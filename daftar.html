@@ -215,7 +215,7 @@
       <input id="districtInput" type="text" class="input-power" placeholder="KECAMATAN..." readonly>
       <div class="btn-row">
         <button id="submitBtn" type="submit" class="btn-hero">SIMPAN PENDAFTARAN!</button>
-        <a id="backToLoginLink" class="btn-hero secondary" href="login.html">KEMBALI KE LOGIN</a>
+        <a id="backToLoginLink" class="btn-hero secondary" href="kreator.html">KEMBALI KE LOGIN</a>
       </div>
     </form>
 
@@ -229,7 +229,7 @@
       return page + '.html';
     }
 
-    document.getElementById('backToLoginLink').href = resolvePageUrl('login');
+    document.getElementById('backToLoginLink').href = resolvePageUrl('kreator');
 
     function callApi(action, payload = {}) {
       return new Promise((resolve, reject) => {
