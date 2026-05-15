@@ -50,6 +50,35 @@
         grid-column: 4 / 5;
     }
 
+    .filter-toggle-btn {
+        align-items: center;
+        background: var(--hero-gold);
+        border: 3px solid var(--hero-purple);
+        border-radius: 16px;
+        box-shadow: 0 5px 0 var(--hero-dark);
+        color: var(--hero-purple);
+        cursor: pointer;
+        display: none;
+        font-family: 'Bangers', cursive;
+        font-size: 20px;
+        gap: 8px;
+        justify-content: center;
+        margin: 12px auto 0;
+        padding: 11px 16px;
+        width: 100%;
+    }
+
+    @media (min-width: 769px) {
+        .filter-toggle-btn {
+            display: none !important;
+        }
+    }
+
+    .filter-toggle-btn:active {
+        box-shadow: 0 2px 0 var(--hero-dark);
+        transform: translateY(3px);
+    }
+
     .mission-filter-panel select,
     .mission-filter-panel input {
         appearance: auto;
@@ -387,7 +416,22 @@
         }
 
         .mission-filter-panel {
+            background: rgba(255, 255, 255, 0.16);
+            border: 3px solid rgba(255, 255, 255, 0.38);
+            border-radius: 22px;
+            box-sizing: border-box;
+            display: none !important;
             grid-template-columns: 1fr;
+            padding: 12px;
+            width: 100%;
+        }
+
+        .filter-toggle-btn {
+            display: inline-flex;
+        }
+
+        .mission-filter-panel.is-open {
+            display: grid !important;
         }
         .mission-filter-panel .filter-search,
         .mission-filter-panel .filter-entry {
@@ -426,6 +470,7 @@
     <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 10px;">
         <h2 id="missionSelectionTitle" style="display:none; margin:0; font-family:'Bangers'; color:white; font-size: 44px; text-shadow: 3px 3px 0 var(--hero-dark), 0 0 18px rgba(255,215,0,0.45);">PILIH MISIMU!</h2>
     </div>
+    <button id="filterToggleBtn" class="filter-toggle-btn" type="button" style="display:none;" onclick="toggleMissionFilters()">☰ FILTER MISI</button>
     <div id="missionFilterPanel" class="mission-filter-panel">
       <select id="kelasFilter" onchange="resetMissionFiltersAndRender()" aria-label="Filter kelas">
         <option value="">Semua Kelas</option>
@@ -554,6 +599,7 @@
 
   function showMissionLoading() {
     document.getElementById('missionSelectionTitle').style.display = 'none';
+    document.getElementById('filterToggleBtn').style.display = 'none';
     document.getElementById('missionFilterPanel').style.display = 'none';
     document.getElementById('missionEntrySummary').style.display = 'none';
     document.getElementById('missionPagination').style.display = 'none';
@@ -599,6 +645,7 @@
     const summary = document.getElementById('missionEntrySummary');
     const pagination = document.getElementById('missionPagination');
     document.getElementById('missionSelectionTitle').style.display = 'block';
+    document.getElementById('filterToggleBtn').style.display = 'inline-flex';
     document.getElementById('missionFilterPanel').style.display = 'grid';
     summary.style.display = 'block';
     pagination.style.display = 'none';
@@ -693,6 +740,13 @@
   function resetMissionFiltersAndRender() {
     missionPage = 1;
     renderDaftarMisi();
+  }
+
+  function toggleMissionFilters() {
+    const panel = document.getElementById('missionFilterPanel');
+    const button = document.getElementById('filterToggleBtn');
+    const isOpen = panel.classList.toggle('is-open');
+    button.innerText = isOpen ? '✕ TUTUP FILTER' : '☰ FILTER MISI';
   }
 
   function setupMissionFilters() {
