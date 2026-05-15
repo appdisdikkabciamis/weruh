@@ -150,6 +150,8 @@ function executeApiAction_(action, payload) {
         return { success: true, data: deleteMission(payload) };
       case 'getCreatorProfile':
         return { success: true, data: getCreatorProfile(payload) };
+      case 'getKecamatanMissionDashboard':
+        return { success: true, data: getKecamatanMissionDashboard() };
       case 'registerCreator':
         return { success: true, data: registerCreator(payload) };
       case 'registerPlayer':
@@ -886,6 +888,77 @@ function getCreatorNamesByEmail_() {
   });
 
   return names;
+}
+
+function getKecamatanMissionDashboard() {
+  ensureKreatorSheet_();
+  const missionSheet = getOrCreateSheet_(PERTANYAAN_SHEET_NAME, PERTANYAAN_HEADERS);
+  const creatorInfo = getCreatorNamesByEmail_();
+  const counts = getAllKecamatanCounts_();
+  const creatorsByDistrict = {};
+
+  if (missionSheet.getLastRow() >= 2) {
+    const rows = missionSheet.getRange(2, 1, missionSheet.getLastRow() - 1, PERTANYAAN_HEADERS.length).getValues();
+    rows.forEach(row => {
+      if (!row[COL_MISSION_ID] || !row[COL_JUDUL]) return;
+
+      const ownerEmail = rowOwnerKey_(row);
+      const creator = creatorInfo[ownerEmail] || {};
+      const kecamatan = cleanText_(creator.kecamatan) || 'Tidak diketahui';
+      if (counts[kecamatan] === undefined) counts[kecamatan] = 0;
+      counts[kecamatan]++;
+
+      if (!creatorsByDistrict[kecamatan]) creatorsByDistrict[kecamatan] = {};
+      const creatorKey = ownerEmail || 'unknown';
+      if (!creatorsByDistrict[kecamatan][creatorKey]) {
+        creatorsByDistrict[kecamatan][creatorKey] = {
+          email: ownerEmail || '-',
+          namaLengkap: cleanText_(creator.namaLengkap) || ownerEmail || 'Tidak diketahui',
+          namaSekolah: cleanText_(creator.namaSekolah) || '-',
+          totalMisi: 0
+        };
+      }
+      creatorsByDistrict[kecamatan][creatorKey].totalMisi++;
+    });
+  }
+
+  return Object.keys(counts)
+    .sort((a, b) => {
+      if (counts[b] !== counts[a]) return counts[b] - counts[a];
+      return a.localeCompare(b);
+    })
+    .map(kecamatan => ({
+      kecamatan,
+      totalMisi: counts[kecamatan],
+      kreator: Object.keys(creatorsByDistrict[kecamatan] || {})
+        .map(key => creatorsByDistrict[kecamatan][key])
+        .sort((a, b) => {
+          if (b.totalMisi !== a.totalMisi) return b.totalMisi - a.totalMisi;
+          return a.namaLengkap.localeCompare(b.namaLengkap);
+        })
+    }));
+}
+
+function getAllKecamatanCounts_() {
+  const counts = {};
+
+  try {
+    const sheet = getSekolahSheet_();
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) return counts;
+
+    const kecamatanIndex = findColumnIndex_(values[0], ['Kecamatan', 'Nama Kecamatan']);
+    if (kecamatanIndex < 0) return counts;
+
+    values.slice(1).forEach(row => {
+      const kecamatan = cleanText_(row[kecamatanIndex]);
+      if (kecamatan && counts[kecamatan] === undefined) counts[kecamatan] = 0;
+    });
+  } catch (err) {
+    return counts;
+  }
+
+  return counts;
 }
 
 function getMissionPlayCountsByTitle_() {

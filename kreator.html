@@ -43,14 +43,18 @@
 
     .creator-top-actions {
       align-items: center;
-      display: none;
+      display: flex;
       flex-wrap: wrap;
       gap: 12px;
       justify-content: flex-end;
     }
 
-    body:not(.login-mode) .creator-top-actions {
-      display: flex;
+    body.login-mode .creator-top-actions .auth-only {
+      display: none;
+    }
+
+    body.district-dashboard-mode #districtDashboardButton {
+      display: none;
     }
 
     .hero-card,
@@ -80,7 +84,7 @@
     }
 
     body.login-mode .creator-topbar {
-      justify-content: flex-start;
+      justify-content: space-between;
       margin-bottom: 0;
       left: 0;
       position: absolute;
@@ -101,6 +105,14 @@
     body.login-mode #quizForm > .row {
       max-width: 520px;
       width: 100%;
+    }
+
+    body.login-mode.district-dashboard-mode #quizForm {
+      display: none;
+    }
+
+    body.login-mode:not(.district-dashboard-mode) #districtDashboardPage {
+      display: none;
     }
 
     body.login-mode .hero-card,
@@ -217,6 +229,126 @@
     .creator-profile-value {
       color: var(--hero-purple);
       font-size: 16px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .district-chart {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      text-align: left;
+    }
+
+    .district-page {
+      align-self: stretch;
+      margin: 64px auto 0;
+      max-width: 980px;
+      width: 100%;
+    }
+
+    .district-page-card {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 34px;
+      box-shadow: 0 12px 0 var(--hero-dark);
+      padding: 26px;
+    }
+
+    .district-page-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 44px;
+      letter-spacing: 1px;
+      margin: 0;
+      text-align: center;
+    }
+
+    .district-page-subtitle {
+      color: #655d7d;
+      font-weight: 900;
+      margin: 6px 0 16px;
+      text-align: center;
+    }
+
+    .district-row {
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      padding: 0;
+      text-align: left;
+      width: 100%;
+    }
+
+    .district-row:hover .district-bar-track,
+    .district-row:focus .district-bar-track {
+      box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.28);
+      outline: none;
+    }
+
+    .district-row-head {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .district-name {
+      color: var(--hero-purple);
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .district-count {
+      background: var(--hero-gold);
+      border: 2px solid var(--hero-purple);
+      border-radius: 999px;
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 18px;
+      min-width: 54px;
+      padding: 4px 10px;
+      text-align: center;
+    }
+
+    .district-bar-track {
+      background: var(--light-purple);
+      border: 3px solid var(--hero-purple);
+      border-radius: 999px;
+      height: 22px;
+      overflow: hidden;
+    }
+
+    .district-bar-fill {
+      background: linear-gradient(90deg, var(--hero-gold), #ff8f00);
+      height: 100%;
+      min-width: 10px;
+    }
+
+    .district-creator-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      text-align: left;
+    }
+
+    .district-creator-item {
+      background: var(--light-purple);
+      border: 3px solid var(--hero-purple);
+      border-radius: 18px;
+      padding: 10px 12px;
+    }
+
+    .district-creator-name {
+      color: var(--hero-purple);
+      font-weight: 900;
+    }
+
+    .district-creator-meta {
+      color: #655d7d;
+      font-size: 13px;
       font-weight: 900;
       overflow-wrap: anywhere;
     }
@@ -1211,7 +1343,8 @@
       body { padding: 14px 10px; }
       body.login-mode { padding: 20px; }
       body.login-mode .app-shell { min-height: calc(100vh - 40px); }
-      body.login-mode .creator-topbar { align-items: flex-start; }
+      body.login-mode .creator-topbar { align-items: flex-start; flex-direction: row; }
+      body.login-mode .creator-top-actions { justify-content: flex-end; }
       body.login-mode .creator-topbar .back-home-btn { width: auto; }
       .creator-topbar { align-items: stretch; flex-direction: column; }
       .creator-top-actions { justify-content: stretch; }
@@ -1248,6 +1381,10 @@
       .creator-profile-row { padding: 5px 0; }
       .creator-profile-label { font-size: 11px; }
       .creator-profile-value { font-size: 14px; }
+      .district-count { font-size: 16px; min-width: 44px; }
+      .district-page { margin-top: 72px; }
+      .district-page-card { border-width: 5px; border-radius: 22px; padding: 16px; }
+      .district-page-title { font-size: 32px; }
       .mission-modal-actions { grid-template-columns: 1fr; }
       .preview-toolbar { align-items: stretch; flex-direction: column; }
       .preview-title { font-size: 28px; }
@@ -1260,11 +1397,12 @@
 <body class="login-mode">
   <div class="app-shell">
     <div class="creator-topbar">
-      <a id="backHomeLink" class="back-home-btn" href="index.html">⬅ KEMBALI</a>
+      <a id="backHomeLink" class="back-home-btn" href="index.html" onclick="return handleBackHomeClick(event)">⬅ KEMBALI</a>
       <div class="creator-top-actions">
-        <button type="button" class="btn btn-soft" onclick="openCreatorProfileModal()">DATA KREATOR</button>
-        <a class="btn btn-soft" href="https://docs.google.com/presentation/d/1jeEzTG9BnZzb669E_gJwnN97OClaBdaWpc9PfhocDMM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">PANDUAN</a>
-        <button type="button" class="creator-logout-btn" onclick="logoutCreator()">LOGOUT</button>
+        <button id="districtDashboardButton" type="button" class="btn btn-soft" onclick="openDistrictDashboard()">DASHBOARD KECAMATAN</button>
+        <button type="button" class="btn btn-soft auth-only" onclick="openCreatorProfileModal()">DATA KREATOR</button>
+        <a class="btn btn-soft auth-only" href="https://docs.google.com/presentation/d/1jeEzTG9BnZzb669E_gJwnN97OClaBdaWpc9PfhocDMM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">PANDUAN</a>
+        <button type="button" class="creator-logout-btn auth-only" onclick="logoutCreator()">LOGOUT</button>
       </div>
     </div>
 
@@ -1276,6 +1414,16 @@
         </div>
         <div class="text-lg-end">
           <a class="btn btn-soft" href="https://docs.google.com/presentation/d/1jeEzTG9BnZzb669E_gJwnN97OClaBdaWpc9PfhocDMM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Buka Panduan</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="districtDashboardPage" class="district-page">
+      <div class="district-page-card">
+        <h1 class="district-page-title">DASHBOARD KECAMATAN</h1>
+        <p class="district-page-subtitle">Grafik jumlah misi dari seluruh kecamatan, diurutkan dari yang paling banyak membuat misi.</p>
+        <div id="districtDashboardBox" class="district-chart">
+          <div class="empty-state">Klik tombol Dashboard Kecamatan untuk memuat data.</div>
         </div>
       </div>
     </section>
@@ -1545,12 +1693,34 @@
     </div>
   </div>
 
+  <div id="districtCreatorModal" class="mission-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="districtCreatorTitle">
+    <div class="mission-modal-card">
+      <div class="mission-modal-icon">👥</div>
+      <h2 id="districtCreatorTitle" class="mission-modal-title">KREATOR KECAMATAN</h2>
+      <p id="districtCreatorSubtitle" class="mission-modal-text">Daftar kreator dan jumlah misinya.</p>
+      <div id="districtCreatorList" class="district-creator-list"></div>
+      <div class="d-grid mt-3">
+        <button type="button" class="btn btn-purple" onclick="closeDistrictCreatorModal()">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function resolvePageUrl(page) {
       return page + '.html';
     }
 
     document.getElementById('backHomeLink').href = resolvePageUrl('index');
+
+    function handleBackHomeClick(event) {
+      if (document.body.classList.contains('district-dashboard-mode')) {
+        event.preventDefault();
+        closeDistrictDashboard();
+        return false;
+      }
+
+      return true;
+    }
 
     const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
     const CREATOR_SESSION_KEY = 'weruhCreatorSession';
@@ -1579,6 +1749,7 @@
     let creatorProfile = null;
     let myMissionsCache = [];
     let myMissionPage = 1;
+    let districtDashboardItems = [];
 
     window.onYouTubeIframeAPIReady = function() {
       ytReady = true;
@@ -1919,6 +2090,86 @@
 
     function closeCreatorProfileModal() {
       document.getElementById('creatorProfileModal').classList.remove('is-open');
+    }
+
+    async function openDistrictDashboard() {
+      const box = document.getElementById('districtDashboardBox');
+      const button = document.getElementById('districtDashboardButton');
+
+      document.body.classList.add('login-mode', 'district-dashboard-mode');
+      box.innerHTML = '<div class="empty-state">Memuat data kecamatan...</div>';
+      if (button) {
+        button.disabled = true;
+        button.innerText = 'MEMUAT...';
+      }
+
+      try {
+        const data = await callApi('getKecamatanMissionDashboard');
+        renderDistrictDashboard(data || []);
+      } catch (err) {
+        box.innerHTML = '<div class="empty-state">Gagal memuat data: ' + escapeHtml(err.message || err) + '</div>';
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.innerText = 'DASHBOARD KECAMATAN';
+        }
+      }
+    }
+
+    function closeDistrictDashboard() {
+      document.body.classList.remove('district-dashboard-mode');
+    }
+
+    function renderDistrictDashboard(items) {
+      const box = document.getElementById('districtDashboardBox');
+      districtDashboardItems = Array.isArray(items) ? items : [];
+      if (!items.length) {
+        box.innerHTML = '<div class="empty-state">Data kecamatan belum ditemukan di sheet Sekolah.</div>';
+        return;
+      }
+
+      const maxValue = Math.max(...items.map(item => Number(item.totalMisi) || 0), 1);
+      box.innerHTML = items.map((item, index) => {
+        const total = Number(item.totalMisi) || 0;
+        const width = Math.max(4, Math.round((total / maxValue) * 100));
+        return `
+          <button type="button" class="district-row" onclick="openDistrictCreatorModal(${index})" aria-label="Lihat kreator Kecamatan ${escapeHtml(item.kecamatan || 'Tidak diketahui')}">
+            <div class="district-row-head">
+              <span class="district-name">${escapeHtml(item.kecamatan || 'Tidak diketahui')}</span>
+              <span class="district-count">${escapeHtml(String(total))} misi</span>
+            </div>
+            <div class="district-bar-track"><div class="district-bar-fill" style="width:${width}%"></div></div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function openDistrictCreatorModal(index) {
+      const district = districtDashboardItems[index];
+      if (!district) return;
+
+      const creators = district.kreator || [];
+      document.getElementById('districtCreatorTitle').innerText = district.kecamatan || 'Kecamatan';
+      document.getElementById('districtCreatorSubtitle').innerText = 'Total ' + (Number(district.totalMisi) || 0) + ' misi dari ' + creators.length + ' kreator.';
+
+      const list = document.getElementById('districtCreatorList');
+      if (!creators.length) {
+        list.innerHTML = '<div class="empty-state">Belum ada kreator yang membuat misi di kecamatan ini.</div>';
+      } else {
+        list.innerHTML = creators.map(creator => `
+          <div class="district-creator-item">
+            <div class="district-creator-name">${escapeHtml(creator.namaLengkap || '-')}</div>
+            <div class="district-creator-meta">${escapeHtml(creator.namaSekolah || '-')}</div>
+            <div class="district-count" style="display:inline-block; margin-top:8px;">${escapeHtml(String(creator.totalMisi || 0))} misi</div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('districtCreatorModal').classList.add('is-open');
+    }
+
+    function closeDistrictCreatorModal() {
+      document.getElementById('districtCreatorModal').classList.remove('is-open');
     }
 
     function validateOwnerFields() {

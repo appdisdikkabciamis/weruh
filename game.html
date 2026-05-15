@@ -42,11 +42,21 @@
         width: 100%;
     }
 
-    .mission-filter-panel select {
+    .mission-filter-panel .filter-search {
+        grid-column: 1 / 4;
+    }
+
+    .mission-filter-panel .filter-entry {
+        grid-column: 4 / 5;
+    }
+
+    .mission-filter-panel select,
+    .mission-filter-panel input {
         appearance: auto;
         background: white;
         border: 4px solid var(--hero-purple);
         border-radius: 16px;
+        box-sizing: border-box;
         box-shadow: 0 5px 0 var(--hero-dark);
         color: var(--hero-purple);
         cursor: pointer;
@@ -379,6 +389,10 @@
         .mission-filter-panel {
             grid-template-columns: 1fr;
         }
+        .mission-filter-panel .filter-search,
+        .mission-filter-panel .filter-entry {
+            grid-column: auto;
+        }
         .mission-grid {
             grid-template-columns: 1fr;
         }
@@ -419,16 +433,20 @@
       <select id="kategoriFilter" onchange="resetMissionFiltersAndRender()" aria-label="Filter kategori">
         <option value="">Semua Kategori</option>
       </select>
-      <select id="entryLimit" onchange="resetMissionFiltersAndRender()" aria-label="Jumlah entri ditampilkan">
+      <select id="kecamatanFilter" onchange="resetMissionFiltersAndRender()" aria-label="Filter kecamatan kreator">
+        <option value="">Semua Kecamatan</option>
+      </select>
+      <select id="sortFilter" onchange="resetMissionFiltersAndRender()" aria-label="Urutkan misi">
+        <option value="newest">Misi terbaru</option>
+        <option value="popular">Paling banyak dimainkan</option>
+      </select>
+      <input id="judulSearch" class="filter-search" type="text" oninput="resetMissionFiltersAndRender()" aria-label="Cari judul misi" placeholder="Cari judul misi...">
+      <select id="entryLimit" class="filter-entry" onchange="resetMissionFiltersAndRender()" aria-label="Jumlah entri ditampilkan">
         <option value="9">Tampilkan 9 entri</option>
         <option value="18">Tampilkan 18 entri</option>
         <option value="27">Tampilkan 27 entri</option>
         <option value="24">Tampilkan 24 entri</option>
         <option value="all">Tampilkan semua</option>
-      </select>
-      <select id="sortFilter" onchange="resetMissionFiltersAndRender()" aria-label="Urutkan misi">
-        <option value="newest">Misi terbaru</option>
-        <option value="popular">Paling banyak dimainkan</option>
       </select>
     </div>
     <div id="missionEntrySummary" class="mission-entry-summary"></div>
@@ -592,12 +610,16 @@
 
     const selectedKelas = document.getElementById('kelasFilter').value;
     const selectedKategori = document.getElementById('kategoriFilter').value;
+    const selectedKecamatan = document.getElementById('kecamatanFilter').value;
+    const searchTitle = document.getElementById('judulSearch').value.trim().toLowerCase();
     const entryLimit = document.getElementById('entryLimit').value;
     const sortMode = document.getElementById('sortFilter').value;
     const filteredMissions = misiData.filter(mission => {
       const kelasMatch = !selectedKelas || String(mission.kelas || '') === selectedKelas;
       const kategoriMatch = !selectedKategori || String(mission.kategori || '') === selectedKategori;
-      return kelasMatch && kategoriMatch;
+      const kecamatanMatch = !selectedKecamatan || String(mission.kecamatanKreator || '') === selectedKecamatan;
+      const titleMatch = !searchTitle || String(mission.judul || '').toLowerCase().includes(searchTitle);
+      return kelasMatch && kategoriMatch && kecamatanMatch && titleMatch;
     }).sort((a, b) => {
       if (sortMode === 'popular') {
         const playDiff = (Number(b.jumlahDimainkan) || 0) - (Number(a.jumlahDimainkan) || 0);
@@ -676,15 +698,20 @@
   function setupMissionFilters() {
     const kelasFilter = document.getElementById('kelasFilter');
     const kategoriFilter = document.getElementById('kategoriFilter');
+    const kecamatanFilter = document.getElementById('kecamatanFilter');
     const selectedKelas = kelasFilter.value;
     const selectedKategori = kategoriFilter.value;
+    const selectedKecamatan = kecamatanFilter.value;
     const kelasOptions = [...new Set(misiData.map(mission => String(mission.kelas || '').trim()).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
     const kategoriOptions = [...new Set(misiData.map(mission => String(mission.kategori || '').trim()).filter(Boolean))].sort();
+    const kecamatanOptions = [...new Set(misiData.map(mission => String(mission.kecamatanKreator || '').trim()).filter(Boolean))].sort();
 
     kelasFilter.innerHTML = '<option value="">Semua Kelas</option>' + kelasOptions.map(kelas => `<option value="${escapeHtml(kelas)}">Kelas ${escapeHtml(kelas)}</option>`).join('');
     kategoriFilter.innerHTML = '<option value="">Semua Kategori</option>' + kategoriOptions.map(kategori => `<option value="${escapeHtml(kategori)}">${escapeHtml(kategori)}</option>`).join('');
+    kecamatanFilter.innerHTML = '<option value="">Semua Kecamatan</option>' + kecamatanOptions.map(kecamatan => `<option value="${escapeHtml(kecamatan)}">${escapeHtml(kecamatan)}</option>`).join('');
     kelasFilter.value = kelasOptions.includes(selectedKelas) ? selectedKelas : '';
     kategoriFilter.value = kategoriOptions.includes(selectedKategori) ? selectedKategori : '';
+    kecamatanFilter.value = kecamatanOptions.includes(selectedKecamatan) ? selectedKecamatan : '';
   }
 
   function mulaiPilihMisi(index) {
