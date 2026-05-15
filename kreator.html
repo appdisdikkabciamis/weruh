@@ -333,6 +333,11 @@
       transform: translateY(3px);
     }
 
+    .btn-hero-login:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
     .creator-login-actions {
       display: grid;
       gap: 12px;
@@ -1294,7 +1299,7 @@
             <p class="creator-login-subtitle">Masuk dengan email belajar.id untuk mengelola Input Explorasi Konten.</p>
             <input id="emailPembuatInput" type="email" name="emailPembuat" class="creator-login-input" placeholder="EMAIL BELAJAR.ID..." required>
             <div class="creator-login-actions">
-              <button type="button" class="btn-hero-login" onclick="loginCreator()">LOGIN!</button>
+              <button id="creatorLoginButton" type="button" class="btn-hero-login" onclick="loginCreator()">LOGIN!</button>
               <a class="btn-hero-login btn-hero-secondary" href="daftar.html">DAFTAR KREATOR</a>
             </div>
             <div id="loginStatus" class="login-status mt-3 d-none"></div>
@@ -1961,6 +1966,13 @@
       const owner = validateOwnerFields();
       if (!owner) return;
 
+      const loginButton = document.getElementById('creatorLoginButton');
+      if (loginButton) {
+        loginButton.disabled = true;
+        loginButton.innerText = 'MEMERIKSA...';
+      }
+      showOwnerMessage('Sedang mencari data kreator di database...', 'warning');
+
       try {
         creatorProfile = null;
         loggedInOwner = owner;
@@ -1977,6 +1989,11 @@
         creatorProfile = null;
         clearCreatorSession();
         showOwnerMessage('Email kreator belum terdaftar. Silakan daftar kreator terlebih dahulu.', 'danger');
+      } finally {
+        if (loginButton) {
+          loginButton.disabled = false;
+          loginButton.innerText = 'LOGIN!';
+        }
       }
     }
 
