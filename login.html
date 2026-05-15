@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruang Kreator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+      :root {
+      --primary-purple: #6f42c1;
+      --light-purple: #f3f0ff;
+      --dark-purple: #4b2c8c;
+      --accent-purple: #a29bfe;
+      --soft-border: rgba(111, 66, 193, 0.16);
+      --selected-border: #f5b700;
+      --hero-purple: #51497f;
+      --hero-gold: #FFD700;
+      --hero-dark: #2c254a;
+    }
+
+    body {
+      background: radial-gradient(circle, #a49fd1 0%, #51497f 100%);
+      color: #2d2545;
+      font-family: "Nunito", "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 28px 14px;
+    }
+
+    .app-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero-card,
+    .panel-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 6px solid var(--hero-purple);
+      border-radius: 30px;
+      box-shadow: 0 12px 0 var(--hero-dark);
+    }
+
+    .hero-card {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    body.login-mode {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+    }
+
+    body.login-mode .app-shell {
+      max-width: 520px;
+      width: 100%;
+    }
+
+    body.login-mode .hero-card,
+    body.login-mode .app-content {
+      display: none;
+    }
+
+    body.login-mode #myMissionList {
+      display: none;
+    }
+
+    body.login-mode #missionDashboard {
+      display: none;
+    }
+
+    body:not(.login-mode) {
+      background: radial-gradient(circle, #a49fd1 0%, #51497f 100%);
+    }
+
+    body:not(.login-mode) .creator-login-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 6px solid var(--hero-purple);
+      border-radius: 30px;
+      box-shadow: 0 12px 0 var(--hero-dark);
+      max-width: none;
+      padding: 18px 22px;
+      text-align: left;
+    }
+
+    body:not(.login-mode) .creator-login-icon,
+    body:not(.login-mode) .creator-login-subtitle,
+    body:not(.login-mode) .creator-login-input,
+    body:not(.login-mode) .btn-hero-login,
+    body:not(.login-mode) .creator-login-actions {
+      display: none;
+    }
+
+    body.login-mode .creator-logout-btn {
+      display: none;
+    }
+
+    body:not(.login-mode) .creator-login-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 28px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    body:not(.login-mode) .creator-login-card {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .creator-logout-btn {
+      background: #ff4757;
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: white;
+      font-family: "Bangers", cursive;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 16px;
+    }
+
+    .creator-logout-btn:hover,
+    .creator-logout-btn:focus {
+      background: #d93648;
+      color: white;
+    }
+
+    .back-home-btn {
+      background: rgba(255, 255, 255, 0.96);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 18px;
+      left: 16px;
+      padding: 10px 16px;
+      position: fixed;
+      text-decoration: none;
+      top: 16px;
+      z-index: 9999;
+    }
+
+    .back-home-btn:hover,
+    .back-home-btn:focus {
+      color: var(--hero-purple);
+    }
+
+    .back-home-btn:active {
+      box-shadow: 0 2px 0 var(--hero-purple);
+      transform: translateY(3px);
+    }
+
+    .creator-login-card {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 40px;
+      box-shadow: 0 15px 0 var(--hero-dark);
+      margin: 0 auto;
+      max-width: 450px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .creator-login-icon {
+      font-size: 70px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .creator-login-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 40px;
+      letter-spacing: 1px;
+      margin: 10px 0 6px;
+    }
+
+    .creator-login-subtitle {
+      color: #655d7d;
+      font-weight: 900;
+      margin-bottom: 22px;
+    }
+
+    .creator-login-input {
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-sizing: border-box;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .creator-login-input:focus {
+      border-color: var(--hero-gold);
+      box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.28);
+      outline: none;
+    }
+
+    .btn-hero-login {
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      cursor: pointer;
+      font-family: "Bangers", cursive;
+      font-size: 22px;
+      padding: 15px 25px;
+      transition: 0.1s;
+      width: 100%;
+    }
+
+    .btn-hero-login:active {
+      box-shadow: 0 3px 0 var(--hero-purple);
+      transform: translateY(3px);
+    }
+
+    .creator-login-actions {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    .creator-login-actions .btn-hero-login {
+      display: block;
+    }
+
+    .btn-hero-secondary {
+      background: white;
+      color: var(--hero-purple);
+    }
+
+    .creator-login-card .login-status {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .panel-card {
+      padding: 24px;
+      height: 100%;
+    }
+
+    .header-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 44px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      margin: 0;
+      text-shadow: 2px 2px 0 rgba(255, 215, 0, 0.45);
+    }
+
+    .step-badge {
+      align-items: center;
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      display: inline-flex;
+      font-family: "Bangers", cursive;
+      font-size: 20px;
+      font-weight: 400;
+      gap: 8px;
+      letter-spacing: 0.5px;
+      padding: 8px 14px;
+    }
+
+    .step-badge span {
+      align-items: center;
+      background: var(--hero-purple);
+      border-radius: 50%;
+      color: white;
+      display: inline-flex;
+      height: 24px;
+      justify-content: center;
+      width: 24px;
+    }
+
+    .form-label {
+      color: var(--hero-purple);
+      font-weight: 900;
+    }
+
+    .form-control,
+    .form-select {
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      font-weight: 800;
+      padding: 12px 14px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--hero-gold);
+      box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.28);
+    }
+
+    .helper-text {
+      color: #726983;
+      font-size: 0.76rem;
+      margin-top: 4px;
+    }
+
+    .mission-grid {
+      align-items: end;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 0.95fr) 96px;
+    }
+
+    .mission-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .mission-field .form-label {
+      font-size: 0.88rem;
+      line-height: 1.15;
+      margin: 0;
+      min-height: 32px;
+    }
+
+    .mission-action {
+      align-self: end;
+    }
+
+    .mission-action .btn {
+      min-height: 42px;
+    }
+
+    .owner-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      max-width: 640px;
+    }
+
+    .app-content.is-locked {
+      display: none;
+    }
+
+    .login-status {
+      background: #f0efff;
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      color: var(--hero-purple);
+      font-weight: 900;
+      padding: 11px 13px;
+    }
+
+    .mission-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .dashboard-header {
+      align-items: center;
+      border-bottom: 4px solid var(--hero-purple);
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      padding-bottom: 15px;
+    }
+
+    .dashboard-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 32px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .editor-toolbar {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .mission-list-item {
+      align-items: center;
+      background: white;
+      border: 4px solid var(--hero-purple);
+      border-radius: 20px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding: 16px;
+      transition: 0.2s;
+    }
+
+    .mission-list-item:hover {
+      background: #fff8b8;
+      transform: translateY(-3px);
+    }
+
+    .mission-list-item strong {
+      color: var(--hero-purple);
+      display: block;
+      font-family: "Bangers", cursive;
+      font-size: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .mission-list-item span {
+      color: #6f687c;
+      font-size: 0.82rem;
+    }
+
+    .question-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 100%;
+    }
+
+    .question-builder .form-label {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .question-builder .form-block {
+      margin-bottom: 0;
+    }
+
+    .compact-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(120px, 0.72fr) minmax(180px, 1fr);
+    }
+
+    .option-grid {
+      display: grid;
+      gap: 7px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .option-grid .input-group {
+      min-width: 0;
+    }
+
+    .option-grid .btn {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .btn-outline-danger {
+      background: #ff4757;
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: white;
+      font-family: "Bangers", cursive;
+      letter-spacing: 0.4px;
+    }
+
+    .btn-outline-danger:hover,
+    .btn-outline-danger:focus {
+      background: #d93648;
+      border-color: var(--hero-purple);
+      color: white;
+    }
+
+    .btn-toggle-active {
+      background: var(--hero-gold) !important;
+      color: var(--hero-purple) !important;
+    }
+
+    .btn-toggle-active:hover,
+    .btn-toggle-active:focus {
+      background: var(--hero-gold) !important;
+      color: var(--hero-purple) !important;
+    }
+
+    .video-stage {
+      background: #14101f;
+      border: 6px solid var(--hero-purple);
+      border-radius: 25px;
+      box-shadow: 0 10px 0 var(--hero-dark);
+      min-height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #player,
+    #webPreview {
+      border: 0;
+      display: none;
+      height: 340px;
+      width: 100%;
+    }
+
+    .video-empty {
+      align-items: center;
+      color: #d9d0ff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      min-height: 300px;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .time-pill {
+      background: var(--hero-purple);
+      border: 3px solid var(--hero-gold);
+      border-radius: 15px;
+      color: white;
+      font-weight: 900;
+      padding: 9px 14px;
+    }
+
+    .btn-purple {
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      transition: 0.1s;
+    }
+
+    .btn-purple:hover,
+    .btn-purple:focus {
+      background: #ffe761;
+      color: var(--hero-purple);
+    }
+
+    .btn-purple:active {
+      box-shadow: 0 3px 0 var(--hero-purple);
+      transform: translateY(3px);
+    }
+
+    .btn-soft {
+      background: white;
+      border: 3px solid var(--hero-purple);
+      border-radius: 15px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      padding: 12px 16px;
+      transition: 0.1s;
+    }
+
+    .btn-soft:hover,
+    .btn-soft:focus {
+      background: var(--hero-gold);
+      color: var(--hero-purple);
+    }
+
+    .btn-soft:active {
+      box-shadow: 0 2px 0 var(--hero-purple);
+      transform: translateY(3px);
+    }
+
+    .question-card {
+      background: white;
+      border: 4px solid var(--hero-purple);
+      border-radius: 20px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      padding: 16px;
+    }
+
+    .question-card.is-selected {
+      background: #fff8b8;
+      border-color: var(--hero-gold);
+      box-shadow: 0 6px 0 var(--hero-purple), 0 0 0 5px rgba(255, 215, 0, 0.28);
+    }
+
+    .marker-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .marker-time {
+      background: var(--hero-purple);
+      border: 3px solid var(--hero-gold);
+      border-radius: 15px;
+      color: white;
+      display: inline-block;
+      font-size: 0.82rem;
+      font-weight: 850;
+      padding: 5px 10px;
+    }
+
+    .timeline {
+      background: white;
+      border: 3px solid var(--hero-purple);
+      border-radius: 999px;
+      height: 16px;
+      margin-top: 22px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .timeline-marker {
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 50%;
+      box-shadow: 0 3px 0 var(--hero-purple);
+      height: 22px;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 22px;
+    }
+
+    .timeline-marker.is-selected {
+      background: var(--selected-border);
+      box-shadow: 0 0 0 5px rgba(245, 183, 0, 0.2);
+    }
+
+    .timeline-marker span {
+      background: #1f1738;
+      border-radius: 8px;
+      bottom: 24px;
+      color: white;
+      display: none;
+      font-size: 0.72rem;
+      font-weight: 800;
+      left: 50%;
+      padding: 4px 7px;
+      position: absolute;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .timeline-marker:hover span {
+      display: block;
+    }
+
+    .empty-state {
+      background: rgba(255, 255, 255, 0.72);
+      border: 4px dashed var(--hero-purple);
+      border-radius: 20px;
+      color: var(--hero-purple);
+      font-weight: 900;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .summary-box {
+      background: white;
+      border: 3px solid var(--hero-purple);
+      border-radius: 18px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .summary-box strong {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      display: block;
+      font-size: 1.75rem;
+      line-height: 1.1;
+    }
+
+    .alert {
+      border: 4px solid var(--hero-purple);
+      border-radius: 20px !important;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      font-weight: 900;
+    }
+
+    .mission-modal-backdrop {
+      align-items: center;
+      background: rgba(44, 37, 74, 0.72);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 2000;
+    }
+
+    .mission-modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .mission-modal-card {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 36px;
+      box-shadow: 0 15px 0 var(--hero-dark), 0 0 80px rgba(0, 0, 0, 0.35);
+      max-width: 460px;
+      padding: 32px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .mission-modal-icon {
+      font-size: 58px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .mission-modal-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 36px;
+      letter-spacing: 1px;
+      margin: 0 0 8px;
+    }
+
+    .mission-modal-text {
+      color: #655d7d;
+      font-weight: 900;
+      margin: 0 0 22px;
+    }
+
+    .mission-modal-actions {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 14px 10px; }
+      body.login-mode { padding: 20px; }
+      .creator-login-card { border-radius: 30px; padding: 28px 22px; }
+      .hero-card, .panel-card { border-width: 4px; border-radius: 22px; box-shadow: 0 8px 0 var(--hero-dark); padding: 18px; }
+      .header-title { font-size: 34px; }
+      .step-badge { font-size: 17px; box-shadow: 0 4px 0 var(--hero-purple); }
+      #player, #webPreview { height: 260px; }
+      .video-stage, .video-empty { min-height: 260px; }
+      .mission-grid { grid-template-columns: 1fr; }
+      .mission-field { gap: 5px; }
+      .mission-field .form-label { min-height: auto; }
+      .owner-grid, .mission-list-item { grid-template-columns: 1fr; }
+      .mission-list-item, .question-card, .summary-box { box-shadow: 0 4px 0 var(--hero-purple); }
+      .compact-row, .option-grid { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .dashboard-header, .editor-toolbar { align-items: stretch; flex-direction: column; }
+      .mission-modal-card { border-width: 5px; border-radius: 28px; padding: 24px 18px; }
+      .mission-modal-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="login-mode">
+  <a id="backHomeLink" class="back-home-btn" href="index.html">⬅ KEMBALI</a>
+  <div class="app-shell">
+    <section class="hero-card">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <h1 class="header-title">Input Explorasi Konten</h1>
+          <p class="mb-0 mt-2 text-secondary">Buat soal dari posisi video secara langsung agar detik berhenti, pertanyaan, opsi, dan kunci tidak perlu diketik manual dalam format panjang.</p>
+        </div>
+        <div class="text-lg-end">
+          <a class="btn btn-soft" href="https://docs.google.com/presentation/d/1jeEzTG9BnZzb669E_gJwnN97OClaBdaWpc9PfhocDMM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Buka Panduan</a>
+        </div>
+      </div>
+    </section>
+
+    <form id="quizForm" onsubmit="handleFormSubmit(event)" novalidate>
+      <input type="hidden" name="missionId" id="missionIdField">
+      <input type="hidden" name="detik" id="detikField">
+      <input type="hidden" name="nomor" id="nomorField">
+      <input type="hidden" name="pertanyaan" id="pertanyaanField">
+      <input type="hidden" name="jawaban" id="jawabanField">
+      <input type="hidden" name="kunci" id="kunciField">
+
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="creator-login-card" id="creatorLoginCard">
+            <div class="creator-login-icon">✏️</div>
+            <h1 class="creator-login-title">KREATOR MISI</h1>
+            <p class="creator-login-subtitle">Masuk dengan email belajar.id untuk mengelola Input Explorasi Konten.</p>
+            <input id="emailPembuatInput" type="email" name="emailPembuat" class="creator-login-input" placeholder="EMAIL BELAJAR.ID..." required>
+            <div class="creator-login-actions">
+              <button type="button" class="btn-hero-login" onclick="loginCreator()">LOGIN!</button>
+              <a class="btn-hero-login btn-hero-secondary" href="daftar.html">DAFTAR KREATOR</a>
+            </div>
+            <div id="loginStatus" class="login-status mt-3 d-none"></div>
+            <button type="button" class="creator-logout-btn" onclick="logoutCreator()">LOGOUT</button>
+          </div>
+          <div id="missionDashboard" class="panel-card mt-3 d-none">
+            <div class="dashboard-header">
+              <div>
+                <h2 class="dashboard-title">DAFTAR MISI SAYA</h2>
+                <p class="mb-0 text-secondary fw-bold">Pilih misi untuk dilihat, diedit, atau buat misi baru.</p>
+              </div>
+              <button type="button" class="btn btn-purple" onclick="startNewMission()">TAMBAH MISI</button>
+            </div>
+            <div id="myMissionList" class="mission-list"></div>
+          </div>
+        </div>
+
+        <div id="appContent" class="col-12 app-content is-locked">
+        <div class="row g-3">
+        <div class="col-12">
+          <div class="editor-toolbar">
+            <button type="button" class="btn btn-soft" onclick="showMissionDashboard()">KEMBALI KE DAFTAR MISI</button>
+            <span id="editorModeLabel" class="time-pill">MODE: TAMBAH MISI</span>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="panel-card mb-3">
+            <div class="step-badge mb-3"><span>2</span>Data Misi</div>
+            <div class="mission-grid">
+              <div class="mission-field">
+                <label class="form-label" for="judulInput">Judul Misi</label>
+                <input id="judulInput" type="text" name="judul" class="form-control" placeholder="Contoh: Mengenal Sejarah Galuh" required>
+              </div>
+              <div class="mission-field">
+                <label class="form-label" for="sourceInput">Sumber Video atau Web</label>
+                <input id="sourceInput" type="text" name="id" class="form-control" placeholder="Tempel link YouTube atau URL web" required>
+              </div>
+              <div class="mission-field">
+                <label class="form-label" for="kelasInput">Kelas</label>
+                <select id="kelasInput" name="kelas" class="form-select" required>
+                  <option value="" disabled selected>Pilih kelas...</option>
+                  <option value="1">Kelas 1</option>
+                  <option value="2">Kelas 2</option>
+                  <option value="3">Kelas 3</option>
+                  <option value="4">Kelas 4</option>
+                  <option value="5">Kelas 5</option>
+                  <option value="6">Kelas 6</option>
+                </select>
+              </div>
+              <div class="mission-field">
+                <label class="form-label" for="kategoriInput">Kategori</label>
+                <select id="kategoriInput" name="kategori" class="form-select" required>
+                  <option value="" disabled selected>Pilih kategori...</option>
+                  <option value="Literasi">Literasi</option>
+                  <option value="Numerasi">Numerasi</option>
+                  <option value="Sains">Sains</option>
+                  <option value="Sosial Budaya">Sosial Budaya</option>
+                  <option value="Karakter">Karakter</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+              <div class="d-grid mission-action">
+                <button type="button" class="btn btn-purple" onclick="loadPreview()">Muat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="panel-card">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
+              <div class="step-badge"><span>3</span>Preview dan Tandai Video</div>
+              <span class="time-pill">Posisi Video: <span id="currentTimeText">00:00</span></span>
+            </div>
+            <div class="video-stage">
+              <div id="videoEmpty" class="video-empty">
+                <strong>Preview belum dimuat</strong>
+                <span>Masukkan sumber video/web, lalu klik “Muat”.</span>
+              </div>
+              <div id="player"></div>
+              <iframe id="webPreview" title="Preview web" allow="autoplay; fullscreen"></iframe>
+            </div>
+            <div class="timeline" aria-label="Penanda pertanyaan pada video">
+              <div id="timelineMarkers"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="panel-card h-100 question-builder">
+            <div class="step-badge mb-3"><span>4</span>Buat Pertanyaan</div>
+            <div class="compact-row">
+              <div class="form-block">
+                <label class="form-label" for="timeInput">Detik Berhenti</label>
+                <input id="timeInput" type="number" min="0" step="1" class="form-control" placeholder="25" oninput="syncSelectedTimeText()">
+              </div>
+              <div class="form-block d-grid align-content-end">
+                <button type="button" class="btn btn-soft btn-sm" onclick="useCurrentVideoTime()">Ambil Posisi: <span id="selectedTimeText">00:00</span></button>
+              </div>
+            </div>
+            <div class="form-block">
+              <label class="form-label" for="questionInput">Pertanyaan</label>
+              <input id="questionInput" type="text" class="form-control" placeholder="Tulis pertanyaan untuk titik video ini...">
+            </div>
+            <div class="form-block">
+              <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+                <label class="form-label mb-0">Opsi Jawaban</label>
+                <div class="d-flex gap-1">
+                  <button type="button" id="alphabetToggleBtn" class="btn btn-soft btn-sm py-1 btn-toggle-active" onclick="toggleAlphabetOptions()">Abjad: ON</button>
+                  <button type="button" class="btn btn-soft btn-sm py-1" onclick="addOptionInput()">Tambah</button>
+                </div>
+              </div>
+              <div id="optionInputs" class="option-grid"></div>
+            </div>
+            <div class="form-block">
+              <label class="form-label" for="answerSelect">Kunci Jawaban</label>
+              <select id="answerSelect" class="form-select"></select>
+            </div>
+            <button type="button" id="questionActionBtn" class="btn btn-purple w-100" onclick="addQuestionMarker()">Tambahkan Pertanyaan ke Video</button>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="panel-card">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
+              <div class="step-badge"><span>5</span>Daftar Pertanyaan</div>
+              <div class="summary-grid flex-grow-1">
+                <div class="summary-box"><strong id="totalQuestions">0</strong><span>Soal</span></div>
+                <div class="summary-box"><strong id="firstMarker">-</strong><span>Awal</span></div>
+                <div class="summary-box"><strong id="lastMarker">-</strong><span>Akhir</span></div>
+              </div>
+            </div>
+            <div id="questionList" class="marker-list"></div>
+            <div id="emptyQuestionList" class="empty-state">Belum ada pertanyaan. Putar video, ambil waktu, lalu tambahkan pertanyaan.</div>
+            <div class="d-grid mt-3">
+              <button type="submit" id="submitBtn" class="btn btn-purple">Simpan Semua Pertanyaan</button>
+            </div>
+            <div id="msg" class="mt-3 d-none alert text-center fw-bold"></div>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="deleteMissionModal" class="mission-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteMissionTitle">
+    <div class="mission-modal-card">
+      <div class="mission-modal-icon">🗑️</div>
+      <h2 id="deleteMissionTitle" class="mission-modal-title">HAPUS MISI?</h2>
+      <p class="mission-modal-text">Misi ini akan hilang dari daftar dan sheet Misi. Aksi ini tidak bisa dibatalkan.</p>
+      <div class="mission-modal-actions">
+        <button type="button" class="btn btn-soft" onclick="closeDeleteMissionModal()">BATAL</button>
+        <button type="button" id="confirmDeleteMissionBtn" class="btn btn-outline-danger" onclick="confirmDeleteMission()">HAPUS MISI</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function resolvePageUrl(page) {
+      return page + '.html';
+    }
+
+    document.getElementById('backHomeLink').href = resolvePageUrl('index');
+
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+    let ytPlayer = null;
+    let ytReady = false;
+    let activeSourceType = '';
+    let questions = [];
+    let timeTicker = null;
+    let selectedQuestionIndex = -1;
+    let alphabetMode = true;
+    let activeMissionId = '';
+    let loggedInOwner = null;
+    let pendingDeleteMissionId = '';
+
+    window.onYouTubeIframeAPIReady = function() {
+      ytReady = true;
+    };
+
+    function ensureYouTubeApiLoaded() {
+      if (window.YT && window.YT.Player) {
+        ytReady = true;
+        return;
+      }
+
+      if (document.getElementById('youtubeIframeApi')) return;
+
+      const script = document.createElement('script');
+      script.id = 'youtubeIframeApi';
+      script.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(script);
+    }
+
+    function callApi(action, payload = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const params = new URLSearchParams({
+          action,
+          payload: JSON.stringify(payload),
+          callback: callbackName
+        });
+
+        window[callbackName] = (response) => {
+          delete window[callbackName];
+          script.remove();
+
+          if (response && response.success) resolve(response.data);
+          else reject(new Error((response && response.error) || 'API gagal dipanggil.'));
+        };
+
+        script.onerror = () => {
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Tidak dapat menghubungi API. Periksa API_URL dan deployment Apps Script.'));
+        };
+
+        script.src = API_URL + '?' + params.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function extractYouTubeId(source) {
+      const value = source.trim();
+      if (/^[a-zA-Z0-9_-]{11}$/.test(value)) return value;
+
+      try {
+        const url = new URL(value);
+        if (url.hostname.includes('youtu.be')) return url.pathname.replace('/', '').slice(0, 11);
+        if (url.hostname.includes('youtube.com')) return url.searchParams.get('v') || url.pathname.split('/').pop();
+      } catch (err) {
+        return '';
+      }
+
+      return '';
+    }
+
+    function formatTime(totalSeconds) {
+      const safeSeconds = Math.max(0, Number(totalSeconds) || 0);
+      const minutes = Math.floor(safeSeconds / 60);
+      const seconds = Math.floor(safeSeconds % 60);
+      return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+
+    function loadPreview() {
+      const source = document.getElementById('sourceInput').value.trim();
+      const videoId = extractYouTubeId(source);
+      const empty = document.getElementById('videoEmpty');
+      const webPreview = document.getElementById('webPreview');
+      const playerBox = document.getElementById('player');
+
+      if (!source) {
+        showMessage('Isi sumber video atau URL terlebih dahulu.', 'danger');
+        return;
+      }
+
+      empty.style.display = 'none';
+      webPreview.style.display = 'none';
+      playerBox.style.display = 'none';
+
+      if (videoId) {
+        activeSourceType = 'youtube';
+        playerBox.style.display = 'block';
+        ensureYouTubeApiLoaded();
+        createOrLoadPlayer(videoId);
+        return;
+      }
+
+      activeSourceType = 'web';
+      webPreview.src = source;
+      webPreview.style.display = 'block';
+      document.getElementById('currentTimeText').innerText = 'Manual';
+    }
+
+    function createOrLoadPlayer(videoId, attempts = 0) {
+      if (!ytReady || !window.YT || !window.YT.Player) {
+        if (attempts > 40) {
+          showMessage('YouTube preview gagal dimuat. Periksa koneksi internet, ekstensi pemblokir iklan, atau coba refresh halaman.', 'danger');
+          document.getElementById('videoEmpty').style.display = 'flex';
+          document.getElementById('player').style.display = 'none';
+          return;
+        }
+
+        setTimeout(() => createOrLoadPlayer(videoId, attempts + 1), 250);
+        return;
+      }
+
+      if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById(videoId);
+      } else {
+        ytPlayer = new YT.Player('player', {
+          videoId,
+          width: '100%',
+          height: '340',
+          playerVars: { rel: 0, modestbranding: 1 },
+          events: { onReady: startTimeTicker }
+        });
+      }
+
+      startTimeTicker();
+    }
+
+    function startTimeTicker() {
+      if (timeTicker) clearInterval(timeTicker);
+      timeTicker = setInterval(() => {
+        if (activeSourceType !== 'youtube' || !ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+        document.getElementById('currentTimeText').innerText = formatTime(ytPlayer.getCurrentTime());
+      }, 350);
+    }
+
+    function useCurrentVideoTime() {
+      if (activeSourceType !== 'youtube' || !ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') {
+        showMessage('Preview YouTube belum aktif. Untuk URL web, isi detik secara manual.', 'warning');
+        return;
+      }
+
+      const seconds = Math.floor(ytPlayer.getCurrentTime());
+      document.getElementById('timeInput').value = seconds;
+      syncSelectedTimeText();
+
+      if (typeof ytPlayer.pauseVideo === 'function') {
+        ytPlayer.pauseVideo();
+      }
+    }
+
+    function syncSelectedTimeText() {
+      const seconds = Number(document.getElementById('timeInput').value || 0);
+      document.getElementById('selectedTimeText').innerText = formatTime(seconds);
+    }
+
+    function addOptionInput(value = '') {
+      const box = document.getElementById('optionInputs');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'input-group';
+      const optionIndex = box.children.length;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'form-control option-input';
+      input.placeholder = 'Tulis opsi jawaban';
+      input.value = alphabetMode ? ensureAlphabetPrefix(value, optionIndex) : removeAlphabetPrefix(value);
+      input.addEventListener('input', refreshAnswerSelect);
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-outline-danger';
+      button.innerText = 'X';
+      button.onclick = () => {
+        wrapper.remove();
+        refreshAnswerSelect();
+      };
+
+      wrapper.appendChild(input);
+      wrapper.appendChild(button);
+      box.appendChild(wrapper);
+      refreshAnswerSelect();
+    }
+
+    function toggleAlphabetOptions() {
+      alphabetMode = !alphabetMode;
+      applyAlphabetMode();
+    }
+
+    function applyAlphabetMode() {
+      const inputs = Array.from(document.querySelectorAll('.option-input'));
+
+      inputs.forEach((input, index) => {
+        const value = input.value.trim();
+        input.value = alphabetMode ? ensureAlphabetPrefix(value, index) : removeAlphabetPrefix(value);
+      });
+
+      updateAlphabetToggleButton();
+      refreshAnswerSelect();
+    }
+
+    function updateAlphabetToggleButton() {
+      const button = document.getElementById('alphabetToggleBtn');
+      if (!button) return;
+
+      button.innerText = alphabetMode ? 'Abjad: ON' : 'Abjad: OFF';
+      button.classList.toggle('btn-toggle-active', alphabetMode);
+    }
+
+    function ensureAlphabetPrefix(value, index) {
+      const cleanValue = removeAlphabetPrefix(value.trim());
+      return getAlphabetPrefix(index) + cleanValue;
+    }
+
+    function getAlphabetPrefix(index) {
+      return String.fromCharCode(65 + index) + '. ';
+    }
+
+    function removeAlphabetPrefix(value) {
+      return value.replace(/^[A-Z]\.\s*/i, '');
+    }
+
+    function getOptionValues() {
+      return Array.from(document.querySelectorAll('.option-input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+    }
+
+    function refreshAnswerSelect() {
+      const select = document.getElementById('answerSelect');
+      const current = select.value;
+      const options = getOptionValues();
+      select.innerHTML = '<option value="">Pilih kunci...</option>';
+
+      options.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option;
+        opt.textContent = option;
+        select.appendChild(opt);
+      });
+
+      if (options.includes(current)) select.value = current;
+    }
+
+    function getOwnerPayload() {
+      return {
+        emailPembuat: document.getElementById('emailPembuatInput').value.trim().toLowerCase()
+      };
+    }
+
+    function validateOwnerFields() {
+      const owner = getOwnerPayload();
+      if (!owner.emailPembuat) {
+        showOwnerMessage('Isi Email belajar.id terlebih dahulu.', 'warning');
+        return null;
+      }
+
+      if (!isBelajarEmail(owner.emailPembuat)) {
+        showOwnerMessage('Email harus memakai domain .belajar.id, contoh: nama@sekolah.belajar.id.', 'warning');
+        return null;
+      }
+
+      return owner;
+    }
+
+    function requireLoggedInOwner() {
+      const owner = validateOwnerFields();
+      if (!owner) return null;
+
+      if (!loggedInOwner || loggedInOwner.emailPembuat !== owner.emailPembuat) {
+        showOwnerMessage('Klik Login terlebih dahulu agar daftar misi dan form input tampil.', 'warning');
+        return null;
+      }
+
+      return owner;
+    }
+
+    function isBelajarEmail(email) {
+      return /^[^\s@]+@[a-z0-9.-]+\.belajar\.id$/i.test(email.trim());
+    }
+
+    function showOwnerMessage(message, type) {
+      const status = document.getElementById('loginStatus');
+      status.className = 'login-status mt-3 d-block';
+      status.innerText = message;
+
+      if (type === 'danger') status.style.borderColor = '#dc3545';
+      else if (type === 'warning') status.style.borderColor = '#ffc107';
+      else status.style.borderColor = 'var(--soft-border)';
+    }
+
+    async function loginCreator() {
+      const owner = validateOwnerFields();
+      if (!owner) return;
+
+      loggedInOwner = owner;
+      document.body.classList.remove('login-mode');
+      document.getElementById('emailPembuatInput').value = owner.emailPembuat;
+      showOwnerMessage('Login sebagai: ' + owner.emailPembuat, 'success');
+      showMissionDashboard();
+      await loadMyMissions();
+    }
+
+    function logoutCreator() {
+      loggedInOwner = null;
+      closeDeleteMissionModal();
+      document.body.classList.add('login-mode');
+      document.getElementById('appContent').classList.add('is-locked');
+      document.getElementById('missionDashboard').classList.add('d-none');
+      document.getElementById('myMissionList').innerHTML = '';
+      document.getElementById('loginStatus').className = 'login-status mt-3 d-none';
+      resetMissionBuilder(false);
+    }
+
+    function showMissionDashboard() {
+      document.getElementById('appContent').classList.add('is-locked');
+      document.getElementById('missionDashboard').classList.remove('d-none');
+    }
+
+    function showMissionEditor(mode) {
+      document.getElementById('missionDashboard').classList.add('d-none');
+      document.getElementById('appContent').classList.remove('is-locked');
+      document.getElementById('editorModeLabel').innerText = mode === 'edit' ? 'MODE: EDIT MISI' : 'MODE: TAMBAH MISI';
+    }
+
+    function startNewMission() {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      resetMissionBuilder(true);
+      showMissionEditor('new');
+    }
+
+    async function loadMyMissions() {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      const list = document.getElementById('myMissionList');
+      list.innerHTML = '<div class="empty-state">Memuat daftar misi...</div>';
+
+      try {
+        const missions = await callApi('getMyMissions', owner);
+        renderMyMissions(missions || []);
+      } catch (err) {
+        list.innerHTML = '';
+        showMessage('Gagal memuat misi: ' + (err.message || err), 'danger');
+      }
+    }
+
+    function renderMyMissions(missions) {
+      const list = document.getElementById('myMissionList');
+      list.innerHTML = '';
+
+      if (!missions.length) {
+        list.innerHTML = '<div class="empty-state">Belum ada misi untuk email ini. Klik TAMBAH MISI untuk membuat misi baru.</div>';
+        return;
+      }
+
+      missions.forEach(mission => {
+        const item = document.createElement('div');
+        item.className = 'mission-list-item';
+        const safeMissionId = String(mission.missionId || '').replace(/'/g, "\\'");
+        item.innerHTML = `
+          <div>
+            <strong>${escapeHtml(mission.judul || '-')}</strong>
+            <span>Kelas ${escapeHtml(String(mission.kelas || '-'))} - ${escapeHtml(mission.kategori || '-')}</span>
+          </div>
+          <div class="d-flex flex-wrap gap-1 justify-content-end">
+            <button type="button" class="btn btn-purple btn-sm" onclick="viewMission('${safeMissionId}')">Lihat</button>
+            <button type="button" class="btn btn-soft btn-sm" onclick="editMission('${safeMissionId}')">Edit</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteCurrentMission('${safeMissionId}')">Hapus</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function viewMission(missionId) {
+      window.location.href = 'game.html?missionId=' + encodeURIComponent(missionId);
+    }
+
+    async function editMission(missionId) {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      try {
+        const detail = await callApi('getMissionDetail', { ...owner, missionId });
+        fillMissionForm(detail);
+        showMissionEditor('edit');
+        showMessage('Misi berhasil dibuka untuk diedit.', 'success');
+      } catch (err) {
+        showMessage('Gagal membuka misi: ' + (err.message || err), 'danger');
+      }
+    }
+
+    function deleteCurrentMission(missionId) {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      pendingDeleteMissionId = missionId;
+      document.getElementById('deleteMissionModal').classList.add('is-open');
+    }
+
+    function closeDeleteMissionModal() {
+      pendingDeleteMissionId = '';
+      document.getElementById('deleteMissionModal').classList.remove('is-open');
+    }
+
+    async function confirmDeleteMission() {
+      const owner = requireLoggedInOwner();
+      if (!owner || !pendingDeleteMissionId) return;
+
+      const missionId = pendingDeleteMissionId;
+      const btn = document.getElementById('confirmDeleteMissionBtn');
+      btn.disabled = true;
+      btn.innerText = 'MENGHAPUS...';
+
+      try {
+        const res = await callApi('deleteMission', { ...owner, missionId });
+        if (activeMissionId === missionId) resetMissionBuilder(false);
+        closeDeleteMissionModal();
+        showMissionDashboard();
+        showMessage(res.message || 'Misi berhasil dihapus.', 'success');
+        loadMyMissions();
+      } catch (err) {
+        showMessage('Gagal menghapus misi: ' + (err.message || err), 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'HAPUS MISI';
+      }
+    }
+
+    function fillMissionForm(detail) {
+      activeMissionId = detail.missionId || '';
+      document.getElementById('missionIdField').value = activeMissionId;
+      document.getElementById('judulInput').value = detail.judul || '';
+      document.getElementById('sourceInput').value = detail.id || '';
+      document.getElementById('kelasInput').value = detail.kelas || '';
+      document.getElementById('kategoriInput').value = detail.kategori || '';
+      document.getElementById('emailPembuatInput').value = detail.emailPembuat || document.getElementById('emailPembuatInput').value;
+      questions = parseQuestionsFromDetail(detail);
+      selectedQuestionIndex = -1;
+      renderQuestionList();
+      clearQuestionDraft();
+      loadPreview();
+    }
+
+    function parseQuestionsFromDetail(detail) {
+      const stops = splitSavedValue(detail.detik, ',').map(Number);
+      const questionTexts = splitSavedValue(detail.pertanyaan, '|');
+      const optionGroups = splitSavedValue(detail.jawaban, '|').map(group => splitSavedValue(group, ','));
+      const answers = splitSavedValue(detail.kunci, '|');
+
+      return questionTexts.map((question, index) => ({
+        time: Number(stops[index]) || 0,
+        question,
+        options: optionGroups[index] || [],
+        answer: answers[index] || ''
+      })).filter(item => item.question);
+    }
+
+    function splitSavedValue(value, separator) {
+      return (value || '').toString().split(separator).map(item => item.trim()).filter(Boolean);
+    }
+
+    function addQuestionMarker() {
+      const time = Number(document.getElementById('timeInput').value);
+      const question = document.getElementById('questionInput').value.trim();
+      const options = getOptionValues();
+      const answer = document.getElementById('answerSelect').value.trim();
+
+      if (!Number.isFinite(time) || time < 0) {
+        showMessage('Detik berhenti harus diisi dengan angka valid.', 'danger');
+        return;
+      }
+
+      if (!question) {
+        showMessage('Pertanyaan wajib diisi.', 'danger');
+        return;
+      }
+
+      if (hasReservedSeparator(question)) {
+        showMessage('Pertanyaan tidak boleh memakai karakter | karena dipakai sebagai pemisah data.', 'danger');
+        return;
+      }
+
+      if (options.length < 2) {
+        showMessage('Minimal buat 2 opsi jawaban.', 'danger');
+        return;
+      }
+
+      if (options.some(option => hasReservedSeparator(option) || option.includes(','))) {
+        showMessage('Opsi jawaban tidak boleh memakai karakter | atau koma.', 'danger');
+        return;
+      }
+
+      if (!answer || !options.includes(answer)) {
+        showMessage('Pilih kunci jawaban dari opsi yang tersedia.', 'danger');
+        return;
+      }
+
+      if (questions.some((item, index) => item.time === time && index !== selectedQuestionIndex)) {
+        showMessage('Sudah ada pertanyaan pada detik yang sama. Gunakan detik berbeda atau hapus pertanyaan lama.', 'danger');
+        return;
+      }
+
+      if (selectedQuestionIndex >= 0) {
+        questions[selectedQuestionIndex] = { time, question, options, answer };
+        showMessage('Pertanyaan berhasil diperbarui.', 'success');
+      } else {
+        questions.push({ time, question, options, answer });
+        showMessage('Pertanyaan berhasil ditambahkan ke daftar.', 'success');
+      }
+
+      questions.sort((a, b) => a.time - b.time);
+      selectedQuestionIndex = questions.findIndex(item => item.time === time && item.question === question);
+      clearQuestionDraft();
+      renderQuestionList();
+    }
+
+    function clearQuestionDraft(resetMissionSelection = false) {
+      if (resetMissionSelection) {
+        activeMissionId = '';
+        document.getElementById('missionIdField').value = '';
+      }
+
+      selectedQuestionIndex = -1;
+      document.getElementById('timeInput').value = '';
+      document.getElementById('questionInput').value = '';
+      document.getElementById('optionInputs').innerHTML = '';
+      document.getElementById('answerSelect').innerHTML = '<option value="">Pilih kunci...</option>';
+      document.getElementById('questionActionBtn').innerText = 'Tambahkan Pertanyaan ke Video';
+      alphabetMode = true;
+      updateAlphabetToggleButton();
+      syncSelectedTimeText();
+      addOptionInput();
+      addOptionInput();
+      addOptionInput();
+      addOptionInput();
+    }
+
+    function renderQuestionList() {
+      const list = document.getElementById('questionList');
+      const empty = document.getElementById('emptyQuestionList');
+      list.innerHTML = '';
+      empty.style.display = questions.length ? 'none' : 'block';
+
+      questions.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card' + (index === selectedQuestionIndex ? ' is-selected' : '');
+
+        const optionText = item.options.map(option => option === item.answer ? '[' + option + ']' : option).join(', ');
+        card.innerHTML = `
+          <div class="d-flex justify-content-between gap-2">
+            <div>
+              <span class="marker-time">Soal ${index + 1} - ${formatTime(item.time)}</span>
+              <h5 class="mt-2 mb-1">${escapeHtml(item.question)}</h5>
+              <div class="text-secondary small">Opsi: ${escapeHtml(optionText)}</div>
+              <div class="text-success small fw-bold">Kunci: ${escapeHtml(item.answer)}</div>
+            </div>
+            <div class="d-flex flex-column gap-2">
+              <button type="button" class="btn btn-soft btn-sm" onclick="selectQuestion(${index})">Lihat</button>
+              <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeQuestion(${index})">Hapus</button>
+            </div>
+          </div>
+        `;
+
+        list.appendChild(card);
+      });
+
+      document.getElementById('totalQuestions').innerText = questions.length;
+      document.getElementById('firstMarker').innerText = questions.length ? formatTime(questions[0].time) : '-';
+      document.getElementById('lastMarker').innerText = questions.length ? formatTime(questions[questions.length - 1].time) : '-';
+      renderTimelineMarkers();
+    }
+
+    function renderTimelineMarkers() {
+      const markerBox = document.getElementById('timelineMarkers');
+      markerBox.innerHTML = '';
+
+      const maxQuestionTime = questions.length ? questions[questions.length - 1].time : 0;
+      const duration = getVideoDuration() || maxQuestionTime || 1;
+
+      questions.forEach((item, index) => {
+        const marker = document.createElement('button');
+        marker.type = 'button';
+        marker.className = 'timeline-marker' + (index === selectedQuestionIndex ? ' is-selected' : '');
+        marker.style.left = Math.min(100, Math.max(0, (item.time / duration) * 100)) + '%';
+        marker.innerHTML = `<span>Soal ${index + 1}: ${formatTime(item.time)}</span>`;
+        marker.onclick = () => selectQuestion(index);
+        markerBox.appendChild(marker);
+      });
+    }
+
+    function getVideoDuration() {
+      if (activeSourceType !== 'youtube' || !ytPlayer || typeof ytPlayer.getDuration !== 'function') return 0;
+      return Number(ytPlayer.getDuration()) || 0;
+    }
+
+    function selectQuestion(index) {
+      const item = questions[index];
+      if (!item) return;
+
+      selectedQuestionIndex = index;
+      document.getElementById('timeInput').value = item.time;
+      document.getElementById('questionInput').value = item.question;
+      document.getElementById('optionInputs').innerHTML = '';
+      document.getElementById('answerSelect').innerHTML = '<option value="">Pilih kunci...</option>';
+      alphabetMode = item.options.some((option, optionIndex) => option.startsWith(getAlphabetPrefix(optionIndex)));
+      updateAlphabetToggleButton();
+      item.options.forEach(option => addOptionInput(option));
+      refreshAnswerSelect();
+      document.getElementById('answerSelect').value = item.answer;
+      document.getElementById('questionActionBtn').innerText = 'Perbarui Pertanyaan';
+      syncSelectedTimeText();
+      seekToMarker(item.time);
+      renderQuestionList();
+    }
+
+    function seekToMarker(seconds) {
+      if (activeSourceType === 'youtube' && ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        ytPlayer.seekTo(seconds, true);
+        ytPlayer.pauseVideo();
+        document.getElementById('timeInput').value = seconds;
+        syncSelectedTimeText();
+      }
+    }
+
+    function removeQuestion(index) {
+      questions.splice(index, 1);
+      if (selectedQuestionIndex === index) selectedQuestionIndex = -1;
+      else if (selectedQuestionIndex > index) selectedQuestionIndex--;
+      renderQuestionList();
+    }
+
+    function buildPayloadFromBuilder() {
+      if (questions.length === 0) throw new Error('Tambahkan minimal 1 pertanyaan sebelum menyimpan.');
+      if (!requireLoggedInOwner()) throw new Error('Pembuat belum login.');
+
+      const judul = document.getElementById('judulInput').value.trim();
+      const source = document.getElementById('sourceInput').value.trim();
+      const kelas = document.getElementById('kelasInput').value.trim();
+      const kategori = document.getElementById('kategoriInput').value.trim();
+
+      if (!judul) throw new Error('Judul Misi wajib diisi.');
+      if (!source) throw new Error('Sumber Video atau Web wajib diisi.');
+      if (!kelas) throw new Error('Kelas wajib dipilih.');
+      if (!kategori) throw new Error('Kategori wajib dipilih.');
+
+      const videoId = extractYouTubeId(source);
+
+      document.getElementById('detikField').value = questions.map(item => item.time).join(', ');
+      document.getElementById('nomorField').value = questions.map((_, index) => index + 1).join(', ');
+      document.getElementById('pertanyaanField').value = questions.map(item => item.question).join(' | ');
+      document.getElementById('jawabanField').value = questions.map(item => item.options.join(',')).join(' | ');
+      document.getElementById('kunciField').value = questions.map(item => item.answer).join(' | ');
+      document.getElementById('missionIdField').value = activeMissionId;
+
+      if (videoId) document.getElementById('sourceInput').value = videoId;
+
+      return Object.fromEntries(new FormData(document.getElementById('quizForm')).entries());
+    }
+
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      if (document.getElementById('appContent').classList.contains('is-locked')) {
+        await loginCreator();
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+
+      try {
+        const formData = buildPayloadFromBuilder();
+        btn.disabled = true;
+        btn.innerText = 'Menyimpan...';
+
+        const res = await callApi('saveData', formData);
+        activeMissionId = res.missionId || '';
+        document.getElementById('missionIdField').value = activeMissionId;
+        showMessage('Berhasil: ' + res.message, 'success');
+        resetMissionBuilder(true);
+        await loadMyMissions();
+        showMissionDashboard();
+      } catch (err) {
+        showMessage('Terjadi kesalahan: ' + (err.message || err), 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Simpan Semua Pertanyaan';
+      }
+    }
+
+    function resetMissionBuilder(keepOwner) {
+      const owner = getOwnerPayload();
+      document.getElementById('quizForm').reset();
+
+      if (keepOwner) {
+        document.getElementById('emailPembuatInput').value = owner.emailPembuat;
+      }
+
+      activeMissionId = '';
+      document.getElementById('missionIdField').value = '';
+      questions = [];
+      renderQuestionList();
+      clearQuestionDraft(false);
+      document.getElementById('videoEmpty').style.display = 'flex';
+      document.getElementById('player').style.display = 'none';
+      document.getElementById('webPreview').style.display = 'none';
+      document.getElementById('currentTimeText').innerText = '00:00';
+    }
+
+    function showMessage(message, type) {
+      const msg = document.getElementById('msg');
+      msg.className = 'mt-3 alert alert-' + type + ' d-block text-center fw-bold';
+      msg.innerText = message;
+
+      if (type === 'success' || type === 'warning') {
+        setTimeout(() => msg.classList.add('d-none'), 4000);
+      }
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function hasReservedSeparator(value) {
+      return value.includes('|');
+    }
+
+    clearQuestionDraft();
+    renderQuestionList();
+  </script>
+</body>
+</html>

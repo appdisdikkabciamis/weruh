@@ -6,14 +6,32 @@
  */
 const SPREADSHEET_ID = '1QbnhFDbowWkUZLcq7oFCd4O3hO-9Qgtfn_AG0W-swdg';
 const PERTANYAAN_SHEET_NAME = 'Misi';
-const JAWABAN_SHEET_NAME = 'Sheet1';
+const PEMAIN_SHEET_NAME = 'Pemain';
+const PERMAINAN_SHEET_NAME = 'Permainan';
 const KREATOR_SHEET_NAME = 'Kreator';
 const KREATOR_HEADERS = [
   'Email',
   'Nama Lengkap',
-  'Asal Sekolah',
+  'NPSN',
+  'Nama Sekolah',
   'Kecamatan'
 ];
+const PEMAIN_HEADERS = [
+  'Email',
+  'Nama Lengkap',
+  'NPSN',
+  'Nama Sekolah',
+  'Kecamatan'
+];
+const PERMAINAN_HEADERS = [
+  'Tanggal',
+  'Email Pemain',
+  'Nama Pemain',
+  'Judul Misi',
+  'Skor',
+  'Daftar Jawaban'
+];
+const SEKOLAH_SHEET_NAME = 'Sekolah';
 const PERTANYAAN_HEADERS = [
   'Mission ID',
   'Email Pembuat',
@@ -70,7 +88,7 @@ function doGet(e) {
   ensureKreatorSheet_();
 
   const requestedPage = e && e.parameter ? e.parameter.page : '';
-  const allowedPages = ['index', 'game', 'daftar'];
+  const allowedPages = ['index', 'login', 'game', 'daftar', 'login-pemain', 'daftar-pemain'];
   const page = allowedPages.indexOf(requestedPage) !== -1 ? requestedPage : 'index';
 
   return HtmlService.createTemplateFromFile(page).evaluate()
@@ -130,10 +148,18 @@ function executeApiAction_(action, payload) {
         return { success: true, data: deleteMission(payload) };
       case 'registerCreator':
         return { success: true, data: registerCreator(payload) };
+      case 'registerPlayer':
+        return { success: true, data: registerPlayer(payload) };
+      case 'loginPlayer':
+        return { success: true, data: loginPlayer(payload) };
+      case 'getSekolahByNpsn':
+        return { success: true, data: getSekolahByNpsn(payload.npsn) };
       case 'getDaftarKelas':
         return { success: true, data: getDaftarKelas() };
       case 'getDaftarVideo':
         return { success: true, data: getDaftarVideo(payload.kelas || payload.kelasTerpilih) };
+      case 'getSemuaMisi':
+        return { success: true, data: getSemuaMisi() };
       case 'simpanJawaban':
         return { success: true, data: simpanJawaban(payload) };
       case 'getLeaderboard':
@@ -163,6 +189,10 @@ function getOrCreateSheet_(sheetName, headers) {
 
   if (sheetName === PERTANYAAN_SHEET_NAME) {
     migratePertanyaanSheetIfNeeded_(sheet);
+  } else if (sheetName === KREATOR_SHEET_NAME) {
+    migrateKreatorSheetIfNeeded_(sheet);
+  } else if (sheetName === PEMAIN_SHEET_NAME) {
+    migratePemainSheetIfNeeded_(sheet);
   }
 
   if (headers && sheet.getLastRow() === 0) {
@@ -176,6 +206,85 @@ function getOrCreateSheet_(sheetName, headers) {
 
 function ensureKreatorSheet_() {
   return getOrCreateSheet_(KREATOR_SHEET_NAME, KREATOR_HEADERS);
+}
+
+function ensurePemainSheet_() {
+  return getOrCreateSheet_(PEMAIN_SHEET_NAME, PEMAIN_HEADERS);
+}
+
+function ensurePermainanSheet_() {
+  return getOrCreateSheet_(PERMAINAN_SHEET_NAME, PERMAINAN_HEADERS);
+}
+
+function migratePemainSheetIfNeeded_(sheet) {
+  if (sheet.getLastRow() === 0) return;
+
+  const headerWidth = Math.max(sheet.getLastColumn(), PEMAIN_HEADERS.length, PERMAINAN_HEADERS.length);
+  const headers = sheet.getRange(1, 1, 1, headerWidth).getValues()[0];
+  const alreadyPemain = PEMAIN_HEADERS.every((header, index) => headers[index] === header);
+  if (alreadyPemain) {
+    trimExtraColumns_(sheet, PEMAIN_HEADERS.length);
+    return;
+  }
+
+  const isOldPermainan = headers[0] === 'Tanggal'
+    && headers[1] === 'Nama'
+    && headers[2] === 'No Absen'
+    && headers[3] === 'Judul Misi';
+  if (!isOldPermainan) return;
+
+  const ss = getSpreadsheet_();
+  const target = ss.getSheetByName(PERMAINAN_SHEET_NAME) || ss.insertSheet(PERMAINAN_SHEET_NAME);
+  if (target.getLastRow() === 0) target.appendRow(PERMAINAN_HEADERS);
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    const oldRows = sheet.getRange(2, 1, lastRow - 1, 6).getValues();
+    const migratedRows = oldRows.map(row => [row[0], '', row[1], row[3], row[4], row[5]]);
+    target.getRange(target.getLastRow() + 1, 1, migratedRows.length, PERMAINAN_HEADERS.length).setValues(migratedRows);
+  }
+
+  sheet.clearContents();
+  sheet.getRange(1, 1, 1, PEMAIN_HEADERS.length).setValues([PEMAIN_HEADERS]);
+  trimExtraColumns_(sheet, PEMAIN_HEADERS.length);
+}
+
+function migrateKreatorSheetIfNeeded_(sheet) {
+  if (sheet.getLastRow() === 0) return;
+
+  const headerWidth = Math.max(sheet.getLastColumn(), KREATOR_HEADERS.length, 4);
+  const headers = sheet.getRange(1, 1, 1, headerWidth).getValues()[0];
+  const alreadyNew = KREATOR_HEADERS.every((header, index) => headers[index] === header);
+  if (alreadyNew) {
+    trimExtraColumns_(sheet, KREATOR_HEADERS.length);
+    return;
+  }
+
+  const isLegacy = headers[0] === 'Email'
+    && headers[1] === 'Nama Lengkap'
+    && headers[2] === 'Asal Sekolah'
+    && headers[3] === 'Kecamatan';
+  if (!isLegacy) return;
+
+  const lastRow = sheet.getLastRow();
+  const values = lastRow > 1
+    ? sheet.getRange(2, 1, lastRow - 1, 4).getValues()
+    : [];
+
+  const migratedValues = values.map(row => [
+    row[0],
+    row[1],
+    '',
+    row[2],
+    row[3]
+  ]);
+
+  sheet.clearContents();
+  sheet.getRange(1, 1, 1, KREATOR_HEADERS.length).setValues([KREATOR_HEADERS]);
+  if (migratedValues.length) {
+    sheet.getRange(2, 1, migratedValues.length, KREATOR_HEADERS.length).setValues(migratedValues);
+  }
+  trimExtraColumns_(sheet, KREATOR_HEADERS.length);
 }
 
 function migratePertanyaanSheetIfNeeded_(sheet) {
@@ -378,6 +487,56 @@ function findMissionRow_(sheet, missionId) {
   return -1;
 }
 
+function getSekolahSheet_() {
+  const ss = getSpreadsheet_();
+  const sheet = ss.getSheetByName(SEKOLAH_SHEET_NAME);
+  if (!sheet) throw new Error("Sheet 'Sekolah' tidak ditemukan.");
+  return sheet;
+}
+
+function normalizeHeader_(value) {
+  return cleanText_(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function findColumnIndex_(headers, candidates) {
+  for (let i = 0; i < headers.length; i++) {
+    const normalized = normalizeHeader_(headers[i]);
+    if (candidates.some(candidate => normalized === normalizeHeader_(candidate))) return i;
+  }
+  return -1;
+}
+
+function getSekolahByNpsn(npsn) {
+  const targetNpsn = cleanText_(npsn);
+  if (!targetNpsn) throw new Error('NPSN wajib diisi.');
+
+  const sheet = getSekolahSheet_();
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) throw new Error('Data sekolah belum tersedia.');
+
+  const headers = values[0];
+  const npsnIndex = findColumnIndex_(headers, ['NPSN']);
+  const namaIndex = findColumnIndex_(headers, ['Nama Sekolah', 'Nama Satuan Pendidikan', 'Nama']);
+  const kecamatanIndex = findColumnIndex_(headers, ['Kecamatan', 'Nama Kecamatan']);
+
+  if (npsnIndex < 0 || namaIndex < 0 || kecamatanIndex < 0) {
+    throw new Error('Header sheet Sekolah harus memiliki NPSN, Nama Sekolah, dan Kecamatan.');
+  }
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    if (cleanText_(row[npsnIndex]) === targetNpsn) {
+      return {
+        npsn: targetNpsn,
+        namaSekolah: cleanText_(row[namaIndex]),
+        kecamatan: cleanText_(row[kecamatanIndex])
+      };
+    }
+  }
+
+  throw new Error('NPSN tidak ditemukan!');
+}
+
 function getMyMissions(payload) {
   ensureKreatorSheet_();
   const sheet = getOrCreateSheet_(PERTANYAAN_SHEET_NAME, PERTANYAAN_HEADERS);
@@ -457,11 +616,13 @@ function deleteMission(payload) {
 
 function registerCreator(payload) {
   const sheet = ensureKreatorSheet_();
+  const sekolah = getSekolahByNpsn(payload.npsn);
   const creator = {
     email: cleanEmail_(payload.email || payload.emailPembuat),
     namaLengkap: cleanText_(payload.namaLengkap),
-    asalSekolah: cleanText_(payload.asalSekolah),
-    kecamatan: cleanText_(payload.kecamatan)
+    npsn: cleanText_(payload.npsn),
+    namaSekolah: sekolah.namaSekolah,
+    kecamatan: sekolah.kecamatan
   };
 
   validateCreator_(creator);
@@ -469,14 +630,14 @@ function registerCreator(payload) {
   const row = [
     creator.email,
     creator.namaLengkap,
-    creator.asalSekolah,
+    creator.npsn,
+    creator.namaSekolah,
     creator.kecamatan
   ];
   const rowToUpdate = findCreatorRow_(sheet, creator.email);
 
   if (rowToUpdate > 1) {
-    sheet.getRange(rowToUpdate, 1, 1, row.length).setValues([row]);
-    return { success: true, message: 'Data kreator berhasil diperbarui.' };
+    throw new Error('EMAIL_ALREADY_REGISTERED');
   }
 
   sheet.appendRow(row);
@@ -487,8 +648,72 @@ function validateCreator_(creator) {
   if (!creator.email) throw new Error('Email wajib diisi.');
   if (!isBelajarEmail_(creator.email)) throw new Error('Email harus memakai domain .belajar.id.');
   if (!creator.namaLengkap) throw new Error('Nama Lengkap wajib diisi.');
-  if (!creator.asalSekolah) throw new Error('Asal Sekolah wajib diisi.');
+  if (!creator.npsn) throw new Error('NPSN wajib diisi.');
+  if (!creator.namaSekolah) throw new Error('Nama Sekolah wajib diisi.');
   if (!creator.kecamatan) throw new Error('Kecamatan wajib diisi.');
+}
+
+function registerPlayer(payload) {
+  const sheet = ensurePemainSheet_();
+  const sekolah = getSekolahByNpsn(payload.npsn);
+  const player = {
+    email: cleanEmail_(payload.email),
+    namaLengkap: cleanText_(payload.namaLengkap),
+    npsn: cleanText_(payload.npsn),
+    namaSekolah: sekolah.namaSekolah,
+    kecamatan: sekolah.kecamatan
+  };
+
+  validatePlayer_(player);
+  if (findPlayerRow_(sheet, player.email) > 1) throw new Error('EMAIL_ALREADY_REGISTERED');
+
+  sheet.appendRow([
+    player.email,
+    player.namaLengkap,
+    player.npsn,
+    player.namaSekolah,
+    player.kecamatan
+  ]);
+  return { success: true, message: 'Pendaftaran pemain berhasil disimpan.' };
+}
+
+function loginPlayer(payload) {
+  const sheet = ensurePemainSheet_();
+  const email = cleanEmail_(payload.email);
+  if (!email) throw new Error('Email wajib diisi.');
+  if (!isBelajarEmail_(email)) throw new Error('Email harus memakai domain .belajar.id.');
+
+  const rowNumber = findPlayerRow_(sheet, email);
+  if (rowNumber < 2) throw new Error('PLAYER_NOT_REGISTERED');
+
+  const row = sheet.getRange(rowNumber, 1, 1, PEMAIN_HEADERS.length).getValues()[0];
+  return {
+    email: cleanEmail_(row[0]),
+    namaLengkap: cleanText_(row[1]),
+    npsn: cleanText_(row[2]),
+    namaSekolah: cleanText_(row[3]),
+    kecamatan: cleanText_(row[4])
+  };
+}
+
+function validatePlayer_(player) {
+  if (!player.email) throw new Error('Email wajib diisi.');
+  if (!isBelajarEmail_(player.email)) throw new Error('Email harus memakai domain .belajar.id.');
+  if (!player.namaLengkap) throw new Error('Nama Lengkap wajib diisi.');
+  if (!player.npsn) throw new Error('NPSN wajib diisi.');
+  if (!player.namaSekolah) throw new Error('Nama Sekolah wajib diisi.');
+  if (!player.kecamatan) throw new Error('Kecamatan wajib diisi.');
+}
+
+function findPlayerRow_(sheet, email) {
+  if (!email || sheet.getLastRow() < 2) return -1;
+
+  const emails = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < emails.length; i++) {
+    if (cleanEmail_(emails[i][0]) === email) return i + 2;
+  }
+
+  return -1;
 }
 
 function findCreatorRow_(sheet, email) {
@@ -539,16 +764,35 @@ function getDaftarVideo(kelasTerpilih) {
   } catch(e) { return []; }
 }
 
+function getSemuaMisi() {
+  try {
+    const ss = getSpreadsheet_();
+    const sheet = ss.getSheetByName(PERTANYAAN_SHEET_NAME);
+    if (!sheet) return [];
+    const data = sheet.getDataRange().getValues();
+
+    return data.slice(1)
+      .filter(row => row[COL_MISSION_ID] && row[COL_JUDUL] && row[COL_SUMBER])
+      .map(row => {
+        const mission = formatMissionForGame_(row);
+        mission.kelas = cleanText_(row[COL_KELAS]);
+        mission.kategori = cleanText_(row[COL_KATEGORI]);
+        return mission;
+      });
+  } catch(e) { return []; }
+}
+
 function simpanJawaban(data) {
   try {
-    let sheet = getOrCreateSheet_(JAWABAN_SHEET_NAME, ["Tanggal", "Nama", "No Absen", "Judul Misi", "Skor", "Daftar Jawaban"]);
+    let sheet = ensurePermainanSheet_();
 
     const values = sheet.getDataRange().getValues();
     let rowToUpdate = -1;
     let jawabanLama = "";
+    const emailPemain = cleanEmail_(data.emailPemain || data.idUser);
 
     for (let i = 1; i < values.length; i++) {
-      if (values[i][2].toString() === data.idUser.toString() && values[i][3] === data.judulVideo) {
+      if (cleanEmail_(values[i][1]) === emailPemain && values[i][3] === data.judulVideo) {
         rowToUpdate = i + 1;
         jawabanLama = values[i][5] || ""; // Ambil jawaban yang sudah tersimpan sebelumnya
         break;
@@ -564,7 +808,7 @@ function simpanJawaban(data) {
       sheet.getRange(rowToUpdate, 5).setValue(data.skor); // Update Skor terbaru
       sheet.getRange(rowToUpdate, 6).setValue(jawabanBaru); // Simpan semua jawaban
     } else {
-      sheet.appendRow([new Date(), data.nama, data.idUser, data.judulVideo, data.skor, data.jawabanAsli]);
+      sheet.appendRow([new Date(), emailPemain, data.nama, data.judulVideo, data.skor, data.jawabanAsli]);
     }
     return "Tersimpan";
   } catch(e) { return "Gagal: " + e.message; }
@@ -575,17 +819,18 @@ function simpanJawaban(data) {
 function getLeaderboard(judulVideo, idUser) {
   try {
     const ss = getSpreadsheet_();
-    const sheet = ss.getSheetByName(JAWABAN_SHEET_NAME);
+    const sheet = ss.getSheetByName(PERMAINAN_SHEET_NAME);
     if (!sheet) return { myRank: "-", total: 0, top10: [] };
     
     const data = sheet.getDataRange().getValues();
     data.shift(); // Buang header
 
     // 1. FILTER: Hanya ambil data yang judul misinya COCOK
+    const targetUser = cleanEmail_(idUser);
     let filtered = data.filter(r => r[3] === judulVideo)
       .map(r => ({ 
-        absen: r[2].toString(),
-        nama: r[1], 
+        email: cleanEmail_(r[1]),
+        nama: r[2], 
         skor: Number(r[4]) || 0,
         waktu: new Date(r[0]).getTime()
       }));
@@ -599,7 +844,7 @@ function getLeaderboard(judulVideo, idUser) {
     // 3. CARI POSISI USER: Cari di urutan ke berapa idUser berada
     let myRank = "-";
     for (let i = 0; i < filtered.length; i++) {
-      if (filtered[i].absen === idUser.toString()) {
+      if (filtered[i].email === targetUser) {
         myRank = i + 1;
         break;
       }
@@ -610,7 +855,7 @@ function getLeaderboard(judulVideo, idUser) {
       rank: i + 1,
       nama: r.nama,
       skor: r.skor,
-      absen: r.absen
+      absen: r.email
     }));
 
     return { 

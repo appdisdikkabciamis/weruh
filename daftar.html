@@ -77,6 +77,43 @@
       outline: none;
     }
 
+    .input-power[readonly] {
+      background: #f6f4ff;
+      color: #4f4a63;
+      cursor: not-allowed;
+    }
+
+    .lookup-loading {
+      align-items: center;
+      background: #fff9d8;
+      border: 3px solid var(--hero-gold);
+      border-radius: 15px;
+      color: var(--hero-purple);
+      display: none;
+      font-weight: 900;
+      gap: 10px;
+      justify-content: center;
+      margin: -4px 0 15px;
+      padding: 12px;
+    }
+
+    .lookup-loading.is-open {
+      display: flex;
+    }
+
+    .lookup-spinner {
+      animation: spin 0.75s linear infinite;
+      border: 4px solid rgba(81, 73, 127, 0.2);
+      border-top-color: var(--hero-purple);
+      border-radius: 50%;
+      height: 22px;
+      width: 22px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .btn-row {
       display: grid;
       gap: 12px;
@@ -126,6 +163,32 @@
       display: block;
     }
 
+    #registerToast {
+      background: var(--hero-purple);
+      border: 4px solid var(--hero-gold);
+      border-radius: 18px;
+      box-shadow: 0 8px 0 var(--hero-dark), 0 0 40px rgba(0,0,0,0.3);
+      color: white;
+      font-weight: 900;
+      left: 50%;
+      max-width: calc(100vw - 32px);
+      min-width: 240px;
+      opacity: 0;
+      padding: 14px 22px;
+      pointer-events: none;
+      position: fixed;
+      text-align: center;
+      top: 24px;
+      transform: translate(-50%, -24px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 5000;
+    }
+
+    #registerToast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
     @media (max-width: 600px) {
       body { padding: 20px; }
       .register-card { border-radius: 30px; padding: 28px 22px; }
@@ -134,6 +197,7 @@
   </style>
 </head>
 <body>
+  <div id="registerToast" role="status" aria-live="polite"></div>
   <main class="register-card">
     <div class="register-icon">📝</div>
     <h1>DAFTAR KREATOR</h1>
@@ -142,11 +206,16 @@
     <form id="creatorForm" onsubmit="submitCreator(event)" novalidate>
       <input id="emailInput" type="email" class="input-power" placeholder="EMAIL BELAJAR.ID...">
       <input id="nameInput" type="text" class="input-power" placeholder="NAMA LENGKAP...">
-      <input id="schoolInput" type="text" class="input-power" placeholder="ASAL SEKOLAH...">
-      <input id="districtInput" type="text" class="input-power" placeholder="KECAMATAN...">
+      <input id="npsnInput" type="text" class="input-power" placeholder="NPSN...">
+      <div id="lookupLoading" class="lookup-loading" aria-live="polite">
+        <span class="lookup-spinner"></span>
+        <span>Mencari nama sekolah dan kecamatan...</span>
+      </div>
+      <input id="schoolInput" type="text" class="input-power" placeholder="NAMA SEKOLAH..." readonly>
+      <input id="districtInput" type="text" class="input-power" placeholder="KECAMATAN..." readonly>
       <div class="btn-row">
         <button id="submitBtn" type="submit" class="btn-hero">SIMPAN PENDAFTARAN!</button>
-        <a class="btn-hero secondary" href="index.html">KEMBALI KE LOGIN</a>
+        <a id="backToLoginLink" class="btn-hero secondary" href="login.html">KEMBALI KE LOGIN</a>
       </div>
     </form>
 
@@ -155,6 +224,12 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+
+    function resolvePageUrl(page) {
+      return page + '.html';
+    }
+
+    document.getElementById('backToLoginLink').href = resolvePageUrl('login');
 
     function callApi(action, payload = {}) {
       return new Promise((resolve, reject) => {
@@ -196,18 +271,44 @@
       box.style.borderColor = type === 'danger' ? '#ff4757' : type === 'warning' ? '#ffc107' : 'var(--hero-purple)';
     }
 
+    function showToast(message) {
+      const toast = document.getElementById('registerToast');
+      clearTimeout(toast.timer);
+      toast.innerText = message;
+      toast.classList.add('show');
+      toast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function setLookupLoading(isLoading) {
+      const loader = document.getElementById('lookupLoading');
+      const submitBtn = document.getElementById('submitBtn');
+      const npsnInput = document.getElementById('npsnInput');
+
+      loader.className = isLoading ? 'lookup-loading is-open' : 'lookup-loading';
+      submitBtn.disabled = isLoading;
+      npsnInput.disabled = isLoading;
+      submitBtn.innerText = isLoading ? 'MENCARI DATA...' : 'SIMPAN PENDAFTARAN!';
+    }
+
+    function clearSchoolLookup() {
+      document.getElementById('schoolInput').value = '';
+      document.getElementById('districtInput').value = '';
+      document.getElementById('statusBox').className = 'status';
+    }
+
     function getPayload() {
       return {
         email: document.getElementById('emailInput').value.trim().toLowerCase(),
         namaLengkap: document.getElementById('nameInput').value.trim(),
-        asalSekolah: document.getElementById('schoolInput').value.trim(),
+        npsn: document.getElementById('npsnInput').value.trim(),
+        namaSekolah: document.getElementById('schoolInput').value.trim(),
         kecamatan: document.getElementById('districtInput').value.trim()
       };
     }
 
     function validatePayload(payload) {
-      if (!payload.email || !payload.namaLengkap || !payload.asalSekolah || !payload.kecamatan) {
-        showStatus('Lengkapi Email, Nama Lengkap, Asal Sekolah, dan Kecamatan.', 'warning');
+      if (!payload.email || !payload.namaLengkap || !payload.npsn) {
+        showStatus('Lengkapi Email, Nama Lengkap, dan NPSN.', 'warning');
         return false;
       }
 
@@ -218,6 +319,51 @@
 
       return true;
     }
+
+    async function lookupSchoolByNpsn() {
+      const npsnInput = document.getElementById('npsnInput');
+      const npsn = npsnInput.value.trim();
+      const schoolInput = document.getElementById('schoolInput');
+      const districtInput = document.getElementById('districtInput');
+
+      if (!/^[0-9]{8}$/.test(npsn)) {
+        clearSchoolLookup();
+        return;
+      }
+
+      try {
+        setLookupLoading(true);
+        showStatus('Mencari data sekolah...', 'success');
+        const res = await callApi('getSekolahByNpsn', { npsn });
+        schoolInput.value = (res && res.namaSekolah) || '';
+        districtInput.value = (res && res.kecamatan) || '';
+        if (!schoolInput.value || !districtInput.value) {
+          showStatus('Data sekolah tidak lengkap untuk NPSN ini.', 'warning');
+        } else {
+          document.getElementById('statusBox').className = 'status';
+        }
+      } catch (err) {
+        showStatus('Gagal mencari sekolah: ' + (err.message || err), 'danger');
+      } finally {
+        setLookupLoading(false);
+      }
+    }
+
+    let npsnLookupTimer = null;
+    document.getElementById('npsnInput').addEventListener('input', (event) => {
+      const value = event.target.value.replace(/\D/g, '').slice(0, 8);
+      if (event.target.value !== value) event.target.value = value;
+
+      clearTimeout(npsnLookupTimer);
+      if (value.length < 8) {
+        clearSchoolLookup();
+        return;
+      }
+
+      npsnLookupTimer = setTimeout(() => {
+        lookupSchoolByNpsn();
+      }, 300);
+    });
 
     async function submitCreator(event) {
       event.preventDefault();
@@ -233,7 +379,12 @@
         showStatus((res && res.message) || 'Pendaftaran kreator berhasil disimpan.', 'success');
         document.getElementById('creatorForm').reset();
       } catch (err) {
-        showStatus('Gagal mendaftar kreator: ' + (err.message || err), 'danger');
+        if ((err.message || err) === 'EMAIL_ALREADY_REGISTERED') {
+          showToast('Email sudah terdaftar');
+          showStatus('Email sudah terdaftar.', 'danger');
+        } else {
+          showStatus('Gagal mendaftar kreator: ' + (err.message || err), 'danger');
+        }
       } finally {
         btn.disabled = false;
         btn.innerText = 'SIMPAN PENDAFTARAN!';

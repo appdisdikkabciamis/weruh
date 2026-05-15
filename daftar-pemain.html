@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Pemain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --hero-purple:#51497f; --hero-gold:#FFD700; --hero-dark:#2c254a; --hero-light:#f0efff; }
+    body { align-items:center; background:radial-gradient(circle,#a49fd1 0%,#51497f 100%); color:var(--hero-dark); display:flex; font-family:"Nunito",sans-serif; justify-content:center; margin:0; min-height:100vh; padding:24px; }
+    .card { background:white; border:8px solid var(--hero-purple); border-radius:40px; box-shadow:0 15px 0 var(--hero-dark); max-width:520px; padding:40px; text-align:center; width:100%; }
+    .icon { font-size:70px; line-height:1; }
+    h1 { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:42px; margin:12px 0 6px; }
+    p { color:#655d7d; font-weight:900; margin:0 0 22px; }
+    .input-power { border:3px solid var(--hero-purple); border-radius:15px; box-sizing:border-box; font-family:"Nunito",sans-serif; font-size:18px; font-weight:900; margin-bottom:15px; padding:15px; text-align:center; width:100%; }
+    .input-power[readonly] { background:#f6f4ff; color:#4f4a63; }
+    .input-power:focus { border-color:var(--hero-gold); box-shadow:0 0 0 4px rgba(255,215,0,.28); outline:none; }
+    .btn { background:var(--hero-gold); border:3px solid var(--hero-purple); border-radius:15px; box-shadow:0 6px 0 var(--hero-purple); color:var(--hero-purple); cursor:pointer; display:block; font-family:"Bangers",cursive; font-size:22px; margin-top:12px; padding:15px 25px; text-decoration:none; width:100%; box-sizing:border-box; }
+    .btn.secondary { background:white; }
+    .status { background:var(--hero-light); border:3px solid var(--hero-purple); border-radius:15px; color:var(--hero-purple); display:none; font-weight:900; margin-top:18px; padding:12px; }
+    .status.is-open { display:block; }
+    .loading { align-items:center; background:#fff9d8; border:3px solid var(--hero-gold); border-radius:15px; color:var(--hero-purple); display:none; font-weight:900; gap:10px; justify-content:center; margin:-4px 0 15px; padding:12px; }
+    .loading.is-open { display:flex; }
+    .spinner { animation:spin .75s linear infinite; border:4px solid rgba(81,73,127,.2); border-top-color:var(--hero-purple); border-radius:50%; height:22px; width:22px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon">📝</div>
+    <h1>DAFTAR PEMAIN</h1>
+    <p>Daftar memakai email belajar.id sebelum memainkan misi.</p>
+    <form onsubmit="submitPlayer(event)" novalidate>
+      <input id="emailInput" class="input-power" type="email" placeholder="EMAIL BELAJAR.ID...">
+      <input id="nameInput" class="input-power" type="text" placeholder="NAMA LENGKAP...">
+      <input id="npsnInput" class="input-power" type="text" placeholder="NPSN...">
+      <div id="lookupLoading" class="loading"><span class="spinner"></span><span>Mencari nama sekolah dan kecamatan...</span></div>
+      <input id="schoolInput" class="input-power" type="text" placeholder="NAMA SEKOLAH..." readonly>
+      <input id="districtInput" class="input-power" type="text" placeholder="KECAMATAN..." readonly>
+      <button id="submitBtn" class="btn" type="submit">SIMPAN PEMAIN!</button>
+      <a id="loginLink" class="btn secondary" href="login-pemain.html">KEMBALI KE LOGIN</a>
+    </form>
+    <div id="statusBox" class="status"></div>
+  </main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+    const params = new URLSearchParams(window.location.search);
+    const missionId = params.get('missionId') || '';
+    if (missionId) document.getElementById('loginLink').href = 'login-pemain.html?missionId=' + encodeURIComponent(missionId);
+
+    function callApi(action, payload = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const urlParams = new URLSearchParams({ action, payload: JSON.stringify(payload), callback: callbackName });
+        window[callbackName] = (response) => { delete window[callbackName]; script.remove(); if (response && response.success) resolve(response.data); else reject(new Error((response && response.error) || 'API gagal dipanggil.')); };
+        script.onerror = () => { delete window[callbackName]; script.remove(); reject(new Error('Tidak dapat menghubungi API.')); };
+        script.src = API_URL + '?' + urlParams.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function showStatus(message, type) {
+      const box = document.getElementById('statusBox');
+      box.className = 'status is-open';
+      box.innerText = message;
+      box.style.borderColor = type === 'danger' ? '#ff4757' : type === 'warning' ? '#ffc107' : 'var(--hero-purple)';
+    }
+
+    function isBelajarEmail(email) { return /^[^\s@]+@[a-z0-9.-]+\.belajar\.id$/i.test(email.trim()); }
+    function setLookupLoading(isLoading) { document.getElementById('lookupLoading').className = isLoading ? 'loading is-open' : 'loading'; document.getElementById('submitBtn').disabled = isLoading; }
+    function clearSchoolLookup() { document.getElementById('schoolInput').value = ''; document.getElementById('districtInput').value = ''; document.getElementById('statusBox').className = 'status'; }
+
+    async function lookupSchoolByNpsn() {
+      const npsn = document.getElementById('npsnInput').value.trim();
+      if (!/^[0-9]{8}$/.test(npsn)) { clearSchoolLookup(); return; }
+      try {
+        setLookupLoading(true);
+        const res = await callApi('getSekolahByNpsn', { npsn });
+        document.getElementById('schoolInput').value = (res && res.namaSekolah) || '';
+        document.getElementById('districtInput').value = (res && res.kecamatan) || '';
+      } catch (err) {
+        showStatus('Gagal mencari sekolah: ' + (err.message || err), 'danger');
+      } finally {
+        setLookupLoading(false);
+      }
+    }
+
+    let npsnLookupTimer = null;
+    document.getElementById('npsnInput').addEventListener('input', (event) => {
+      const value = event.target.value.replace(/\D/g, '').slice(0, 8);
+      if (event.target.value !== value) event.target.value = value;
+      clearTimeout(npsnLookupTimer);
+      if (value.length < 8) { clearSchoolLookup(); return; }
+      npsnLookupTimer = setTimeout(lookupSchoolByNpsn, 300);
+    });
+
+    async function submitPlayer(event) {
+      event.preventDefault();
+      const payload = {
+        email: document.getElementById('emailInput').value.trim().toLowerCase(),
+        namaLengkap: document.getElementById('nameInput').value.trim(),
+        npsn: document.getElementById('npsnInput').value.trim()
+      };
+      if (!payload.email || !payload.namaLengkap || !payload.npsn) return showStatus('Lengkapi Email, Nama Lengkap, dan NPSN.', 'warning');
+      if (!isBelajarEmail(payload.email)) return showStatus('Email harus memakai domain .belajar.id.', 'warning');
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = 'MENYIMPAN...';
+      try {
+        await callApi('registerPlayer', payload);
+        const player = await callApi('loginPlayer', { email: payload.email });
+        localStorage.setItem('weruhPlayer', JSON.stringify(player));
+        window.location.href = missionId ? 'game.html?missionId=' + encodeURIComponent(missionId) : 'game.html';
+      } catch (err) {
+        if ((err.message || err) === 'EMAIL_ALREADY_REGISTERED') showStatus('Email sudah terdaftar sebagai pemain.', 'danger');
+        else showStatus('Gagal mendaftar pemain: ' + (err.message || err), 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'SIMPAN PEMAIN!';
+      }
+    }
+  </script>
+</body>
+</html>

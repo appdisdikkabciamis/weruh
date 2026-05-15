@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Pemain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --hero-purple:#51497f; --hero-gold:#FFD700; --hero-dark:#2c254a; --hero-light:#f0efff; }
+    body { align-items:center; background:radial-gradient(circle,#a49fd1 0%,#51497f 100%); color:var(--hero-dark); display:flex; font-family:"Nunito",sans-serif; justify-content:center; margin:0; min-height:100vh; padding:24px; }
+    .card { background:white; border:8px solid var(--hero-purple); border-radius:40px; box-shadow:0 15px 0 var(--hero-dark); max-width:460px; padding:40px; text-align:center; width:100%; }
+    .icon { font-size:70px; line-height:1; }
+    h1 { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:42px; margin:12px 0 6px; }
+    p { color:#655d7d; font-weight:900; margin:0 0 22px; }
+    .input-power { border:3px solid var(--hero-purple); border-radius:15px; box-sizing:border-box; font-family:"Nunito",sans-serif; font-size:18px; font-weight:900; margin-bottom:15px; padding:15px; text-align:center; width:100%; }
+    .input-power:focus { border-color:var(--hero-gold); box-shadow:0 0 0 4px rgba(255,215,0,.28); outline:none; }
+    .btn { background:var(--hero-gold); border:3px solid var(--hero-purple); border-radius:15px; box-shadow:0 6px 0 var(--hero-purple); color:var(--hero-purple); cursor:pointer; display:block; font-family:"Bangers",cursive; font-size:22px; margin-top:12px; padding:15px 25px; text-decoration:none; width:100%; }
+    .btn.secondary { background:white; box-sizing:border-box; }
+    .btn:active { box-shadow:0 3px 0 var(--hero-purple); transform:translateY(3px); }
+    .status { background:var(--hero-light); border:3px solid var(--hero-purple); border-radius:15px; color:var(--hero-purple); display:none; font-weight:900; margin-top:18px; padding:12px; }
+    .status.is-open { display:block; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon">🎮</div>
+    <h1>LOGIN PEMAIN</h1>
+    <p>Masuk memakai email belajar.id untuk memainkan misi.</p>
+    <form onsubmit="loginPlayer(event)" novalidate>
+      <input id="emailInput" class="input-power" type="email" placeholder="EMAIL BELAJAR.ID...">
+      <button id="loginBtn" class="btn" type="submit">LOGIN PEMAIN!</button>
+      <a id="registerLink" class="btn secondary" href="daftar-pemain.html">DAFTAR PEMAIN</a>
+      <a class="btn secondary" href="game.html">KEMBALI KE MISI</a>
+    </form>
+    <div id="statusBox" class="status"></div>
+  </main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+    const params = new URLSearchParams(window.location.search);
+    const missionId = params.get('missionId') || '';
+    if (missionId) document.getElementById('registerLink').href = 'daftar-pemain.html?missionId=' + encodeURIComponent(missionId);
+
+    function callApi(action, payload = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const urlParams = new URLSearchParams({ action, payload: JSON.stringify(payload), callback: callbackName });
+        window[callbackName] = (response) => {
+          delete window[callbackName];
+          script.remove();
+          if (response && response.success) resolve(response.data);
+          else reject(new Error((response && response.error) || 'API gagal dipanggil.'));
+        };
+        script.onerror = () => { delete window[callbackName]; script.remove(); reject(new Error('Tidak dapat menghubungi API.')); };
+        script.src = API_URL + '?' + urlParams.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function showStatus(message, type) {
+      const box = document.getElementById('statusBox');
+      box.className = 'status is-open';
+      box.innerText = message;
+      box.style.borderColor = type === 'danger' ? '#ff4757' : 'var(--hero-purple)';
+    }
+
+    function isBelajarEmail(email) { return /^[^\s@]+@[a-z0-9.-]+\.belajar\.id$/i.test(email.trim()); }
+
+    async function loginPlayer(event) {
+      event.preventDefault();
+      const email = document.getElementById('emailInput').value.trim().toLowerCase();
+      if (!email) return showStatus('Email wajib diisi.', 'danger');
+      if (!isBelajarEmail(email)) return showStatus('Email harus memakai domain .belajar.id.', 'danger');
+
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.innerText = 'MEMERIKSA...';
+      try {
+        const player = await callApi('loginPlayer', { email });
+        localStorage.setItem('weruhPlayer', JSON.stringify(player));
+        window.location.href = missionId ? 'game.html?missionId=' + encodeURIComponent(missionId) : 'game.html';
+      } catch (err) {
+        if ((err.message || err) === 'PLAYER_NOT_REGISTERED') {
+          showStatus('Email belum terdaftar sebagai pemain.', 'danger');
+        } else {
+          showStatus('Gagal login pemain: ' + (err.message || err), 'danger');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'LOGIN PEMAIN!';
+      }
+    }
+  </script>
+</body>
+</html>
