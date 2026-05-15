@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pemain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --hero-purple:#51497f; --hero-gold:#FFD700; --hero-dark:#2c254a; --hero-light:#f0efff; --hero-accent:#00d2ff; }
+    body { background:radial-gradient(circle,#a49fd1 0%,#51497f 100%); color:var(--hero-dark); font-family:"Nunito",sans-serif; margin:0; min-height:100vh; padding:24px; }
+    .shell { margin:0 auto; max-width:1180px; }
+    .topbar { align-items:center; display:flex; gap:14px; justify-content:space-between; margin-bottom:20px; }
+    .top-actions { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; }
+    .btn { background:white; border:3px solid var(--hero-purple); border-radius:15px; box-shadow:0 5px 0 var(--hero-purple); color:var(--hero-purple); cursor:pointer; font-family:"Bangers",cursive; font-size:18px; padding:10px 16px; text-decoration:none; }
+    .btn.primary { background:var(--hero-gold); }
+    .btn:active { box-shadow:0 2px 0 var(--hero-purple); transform:translateY(3px); }
+    .hero { background:white; border:8px solid var(--hero-purple); border-radius:34px; box-shadow:0 12px 0 var(--hero-dark); padding:26px; }
+    .hero-title { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:46px; letter-spacing:1px; margin:0; }
+    .hero-subtitle { color:#655d7d; font-weight:900; margin:6px 0 0; }
+    .grid { display:grid; gap:18px; grid-template-columns:repeat(4,minmax(0,1fr)); margin-top:20px; }
+    .stat { background:var(--hero-light); border:4px solid var(--hero-purple); border-radius:22px; box-shadow:0 6px 0 var(--hero-purple); padding:18px; text-align:center; }
+    .stat strong { color:var(--hero-purple); display:block; font-family:"Bangers",cursive; font-size:42px; line-height:1; }
+    .stat span { color:#655d7d; font-weight:900; }
+    .content { display:block; margin-top:20px; }
+    .card { background:white; border:6px solid var(--hero-purple); border-radius:28px; box-shadow:0 10px 0 var(--hero-dark); padding:22px; }
+    .card h2 { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:32px; margin:0 0 14px; }
+    .profile-row { border-bottom:2px solid rgba(81,73,127,.18); padding:10px 0; }
+    .profile-row:last-child { border-bottom:0; }
+    .label { color:#655d7d; font-size:13px; font-weight:900; text-transform:uppercase; }
+    .value { color:var(--hero-purple); font-size:18px; font-weight:900; overflow-wrap:anywhere; }
+    .history { display:grid; gap:12px; }
+    .history-item { background:var(--hero-light); border:4px solid var(--hero-purple); border-radius:20px; padding:14px; }
+    .history-body { align-items:center; display:grid; gap:14px; grid-template-columns:140px minmax(0,1fr); }
+    .history-preview { align-items:center; background:#151226; border:4px solid var(--hero-purple); border-radius:16px; display:flex; height:82px; justify-content:center; overflow:hidden; position:relative; width:100%; }
+    .history-preview img { height:100%; object-fit:cover; width:100%; }
+    .history-preview .play-badge { align-items:center; background:rgba(255,215,0,.95); border:3px solid var(--hero-purple); border-radius:50%; color:var(--hero-purple); display:flex; font-family:"Bangers",cursive; font-size:20px; height:38px; justify-content:center; left:50%; padding-left:3px; position:absolute; top:50%; transform:translate(-50%,-50%); width:38px; }
+    .history-preview.web { color:white; flex-direction:column; font-size:12px; font-weight:900; gap:3px; padding:8px; text-align:center; }
+    .history-preview.web span:first-child { font-size:28px; line-height:1; }
+    .history-head { align-items:flex-start; display:flex; gap:12px; justify-content:space-between; }
+    .history-detail { text-align:left; }
+    .history-title { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:24px; letter-spacing:.5px; margin:0; }
+    .score { background:var(--hero-gold); border:3px solid var(--hero-purple); border-radius:16px; color:var(--hero-purple); font-family:"Bangers",cursive; font-size:28px; padding:8px 12px; white-space:nowrap; }
+    .date { color:#655d7d; font-weight:900; margin-top:5px; }
+    .empty, .loading { color:var(--hero-purple); font-weight:900; text-align:center; }
+    .modal-backdrop { align-items:center; background:rgba(44,37,74,.72); display:none; inset:0; justify-content:center; padding:20px; position:fixed; z-index:3000; }
+    .modal-backdrop.is-open { display:flex; }
+    .modal-card { background:white; border:8px solid var(--hero-purple); border-radius:34px; box-shadow:0 15px 0 var(--hero-dark),0 0 80px rgba(0,0,0,.35); max-height:calc(100vh - 40px); max-width:520px; overflow:auto; padding:22px; width:100%; }
+    .modal-title { color:var(--hero-purple); font-family:"Bangers",cursive; font-size:36px; margin:0 0 12px; }
+    @media (max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:560px) { body { padding:14px; } .topbar { align-items:stretch; flex-direction:column; } .top-actions { justify-content:stretch; } .top-actions .btn { text-align:center; } .grid { grid-template-columns:1fr; } .hero-title { font-size:36px; } .history-body { grid-template-columns:1fr; } .history-head { flex-direction:column; } .modal-backdrop { align-items:flex-start; padding:12px; } .modal-card { border-width:5px; border-radius:24px; max-height:calc(100vh - 24px); padding:18px; } .modal-title { font-size:30px; } .profile-row { padding:7px 0; } .value { font-size:16px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <a class="btn" href="game.html">KEMBALI KE MISI</a>
+      <div class="top-actions">
+        <button id="profileButton" class="btn" type="button" onclick="openProfileModal()">👤 DATA PEMAIN</button>
+        <button class="btn primary" type="button" onclick="logoutPlayer()">LOGOUT</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1 class="hero-title">DASHBOARD PEMAIN</h1>
+      <p id="welcomeText" class="hero-subtitle">Memuat data pemain...</p>
+      <div class="grid">
+        <div class="stat"><strong id="totalMain">0</strong><span>Total Main</span></div>
+        <div class="stat"><strong id="totalMisi">0</strong><span>Misi Berbeda</span></div>
+        <div class="stat"><strong id="skorTertinggi">0</strong><span>Skor Tertinggi</span></div>
+        <div class="stat"><strong id="rataRataSkor">0</strong><span>Rata-rata Skor</span></div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="card">
+        <h2>RIWAYAT PERMAINAN</h2>
+        <div id="historyBox" class="loading">Memuat riwayat...</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="profileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal-card">
+      <h2 id="profileModalTitle" class="modal-title">DATA PEMAIN</h2>
+      <div id="profileBox" class="loading">Memuat profil...</div>
+      <button class="btn primary" type="button" style="margin-top:18px; width:100%;" onclick="closeProfileModal()">TUTUP</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+
+    function callApi(action, payload = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const params = new URLSearchParams({ action, payload: JSON.stringify(payload), callback: callbackName });
+        window[callbackName] = (response) => {
+          delete window[callbackName];
+          script.remove();
+          if (response && response.success) resolve(response.data);
+          else reject(new Error((response && response.error) || 'API gagal dipanggil.'));
+        };
+        script.onerror = () => { delete window[callbackName]; script.remove(); reject(new Error('Tidak dapat menghubungi API.')); };
+        script.src = API_URL + '?' + params.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function loadCurrentPlayer() {
+      try { return JSON.parse(localStorage.getItem('weruhPlayer') || 'null'); }
+      catch (err) { return null; }
+    }
+
+    async function initDashboard() {
+      const player = loadCurrentPlayer();
+      if (!player || !player.email) {
+        window.location.href = 'login-pemain.html';
+        return;
+      }
+
+      try {
+        const data = await callApi('getPlayerDashboard', { email: player.email });
+        renderDashboard(data);
+      } catch (err) {
+        document.getElementById('welcomeText').innerText = 'Gagal memuat dashboard: ' + (err.message || err);
+        document.getElementById('profileBox').innerHTML = '<div class="empty">Data pemain tidak dapat dimuat.</div>';
+        document.getElementById('historyBox').innerHTML = '<div class="empty">Riwayat permainan tidak dapat dimuat.</div>';
+      }
+    }
+
+    function renderDashboard(data) {
+      const player = data.player || {};
+      const summary = data.summary || {};
+      const history = data.history || [];
+
+      document.getElementById('welcomeText').innerText = 'Halo, ' + (player.namaLengkap || player.email || 'Pemain') + '! Ini ringkasan petualanganmu.';
+      document.getElementById('profileButton').innerText = '👤 DATA PEMAIN';
+      document.getElementById('totalMain').innerText = summary.totalMain || 0;
+      document.getElementById('totalMisi').innerText = summary.totalMisi || 0;
+      document.getElementById('skorTertinggi').innerText = summary.skorTertinggi || 0;
+      document.getElementById('rataRataSkor').innerText = summary.rataRataSkor || 0;
+
+      document.getElementById('profileBox').innerHTML = `
+        ${profileRow('Nama', player.namaLengkap || '-')}
+        ${profileRow('Email', player.email || '-')}
+        ${profileRow('NPSN', player.npsn || '-')}
+        ${profileRow('Sekolah', player.namaSekolah || '-')}
+        ${profileRow('Kecamatan', player.kecamatan || '-')}
+      `;
+
+      if (!history.length) {
+        document.getElementById('historyBox').innerHTML = '<div class="empty">Belum ada riwayat permainan.</div>';
+        return;
+      }
+
+      document.getElementById('historyBox').innerHTML = '<div class="history">' + history.map(item => `
+        <div class="history-item">
+          <div class="history-body">
+            ${renderHistoryPreview(item)}
+            <div class="history-head">
+              <div class="history-detail">
+                <h3 class="history-title">${escapeHtml(item.judulMisi || 'Misi')}</h3>
+                <div class="date">${formatDate(item.tanggal)}</div>
+              </div>
+              <div class="score">${escapeHtml(String(item.skor || 0))}</div>
+            </div>
+          </div>
+        </div>
+      `).join('') + '</div>';
+    }
+
+    function renderHistoryPreview(item) {
+      const youtubeId = getYoutubeId(item.videoId || '');
+      if (youtubeId) {
+        return `<div class="history-preview"><img src="https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg" alt="Preview ${escapeHtml(item.judulMisi || 'misi')}"><span class="play-badge">▶</span></div>`;
+      }
+
+      return '<div class="history-preview web"><span>🌐</span><span>Konten Web</span></div>';
+    }
+
+    function getYoutubeId(value) {
+      const source = String(value || '').trim();
+      if (!source) return '';
+      if (/^[a-zA-Z0-9_-]{11}$/.test(source)) return source;
+
+      const patterns = [
+        /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+        /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+      ];
+
+      for (const pattern of patterns) {
+        const match = source.match(pattern);
+        if (match) return match[1];
+      }
+
+      return '';
+    }
+
+    function openProfileModal() {
+      document.getElementById('profileModal').classList.add('is-open');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.remove('is-open');
+    }
+
+    function profileRow(label, value) {
+      return `<div class="profile-row"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(String(value))}</div></div>`;
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '-';
+      return date.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function logoutPlayer() {
+      localStorage.removeItem('weruhPlayer');
+      window.location.href = 'login-pemain.html';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    initDashboard();
+  </script>
+</body>
+</html>

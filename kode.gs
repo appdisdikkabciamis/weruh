@@ -88,11 +88,11 @@ function doGet(e) {
   ensureKreatorSheet_();
 
   const requestedPage = e && e.parameter ? e.parameter.page : '';
-  const allowedPages = ['index', 'kreator', 'game', 'daftar', 'login-pemain', 'daftar-pemain'];
+  const allowedPages = ['index', 'kreator', 'game', 'daftar', 'login-pemain', 'daftar-pemain', 'dashboard-pemain'];
   const page = allowedPages.indexOf(requestedPage) !== -1 ? requestedPage : 'index';
 
   return HtmlService.createTemplateFromFile(page).evaluate()
-      .setTitle('Markas Pahlawan Cilik')
+      .setTitle('Markas Belajar Interaktif')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -142,16 +142,22 @@ function executeApiAction_(action, payload) {
         return { success: true, data: getMyMissions(payload) };
       case 'getMissionDetail':
         return { success: true, data: getMissionDetail(payload) };
+      case 'getMissionScores':
+        return { success: true, data: getMissionScores(payload) };
       case 'getMissionById':
         return { success: true, data: getMissionById(payload) };
       case 'deleteMission':
         return { success: true, data: deleteMission(payload) };
+      case 'getCreatorProfile':
+        return { success: true, data: getCreatorProfile(payload) };
       case 'registerCreator':
         return { success: true, data: registerCreator(payload) };
       case 'registerPlayer':
         return { success: true, data: registerPlayer(payload) };
       case 'loginPlayer':
         return { success: true, data: loginPlayer(payload) };
+      case 'getPlayerDashboard':
+        return { success: true, data: getPlayerDashboard(payload) };
       case 'getSekolahByNpsn':
         return { success: true, data: getSekolahByNpsn(payload.npsn) };
       case 'getDaftarKelas':
@@ -544,16 +550,22 @@ function getMyMissions(payload) {
   if (!key || !isBelajarEmail_(key) || sheet.getLastRow() < 2) return [];
 
   const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, PERTANYAAN_HEADERS.length).getValues();
+  const playCounts = getMissionPlayCountsByTitle_();
   return data
-    .filter(row => rowOwnerKey_(row) === key)
-    .map(row => ({
-      missionId: row[COL_MISSION_ID],
-      judul: row[COL_JUDUL],
-      kelas: row[COL_KELAS],
-      kategori: row[COL_KATEGORI],
-      updatedAt: row[COL_DIUBAH] ? new Date(row[COL_DIUBAH]).toISOString() : ''
-    }))
-    .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+      .filter(row => rowOwnerKey_(row) === key)
+      .map(row => ({
+        missionId: row[COL_MISSION_ID],
+        judul: row[COL_JUDUL],
+      videoId: row[COL_SUMBER] ? row[COL_SUMBER].toString() : '',
+      id: row[COL_SUMBER] ? row[COL_SUMBER].toString() : '',
+      source: row[COL_SUMBER] ? row[COL_SUMBER].toString() : '',
+        sumber: row[COL_SUMBER] ? row[COL_SUMBER].toString() : '',
+        kelas: row[COL_KELAS],
+        kategori: row[COL_KATEGORI],
+        jumlahDimainkan: playCounts[cleanText_(row[COL_JUDUL])] || 0,
+        updatedAt: row[COL_DIUBAH] ? new Date(row[COL_DIUBAH]).toISOString() : ''
+      }))
+      .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
 }
 
 function getMissionDetail(payload) {
@@ -577,6 +589,46 @@ function getMissionDetail(payload) {
     kelas: row[COL_KELAS],
     kategori: row[COL_KATEGORI],
     emailPembuat: row[COL_EMAIL_PEMBUAT]
+  };
+}
+
+function getMissionScores(payload) {
+  ensureKreatorSheet_();
+  const missionSheet = getOrCreateSheet_(PERTANYAAN_SHEET_NAME, PERTANYAAN_HEADERS);
+  const rowNumber = findMissionRow_(missionSheet, cleanText_(payload.missionId));
+  if (rowNumber < 2) throw new Error('Misi tidak ditemukan.');
+
+  const missionRow = missionSheet.getRange(rowNumber, 1, 1, PERTANYAAN_HEADERS.length).getValues()[0];
+  assertOwnerMatches_(missionRow, payload);
+
+  const missionTitle = cleanText_(missionRow[COL_JUDUL]);
+  const gameSheet = ensurePermainanSheet_();
+  const scores = [];
+
+  if (gameSheet.getLastRow() >= 2) {
+    const rows = gameSheet.getRange(2, 1, gameSheet.getLastRow() - 1, PERMAINAN_HEADERS.length).getValues();
+    rows.forEach(row => {
+      if (cleanText_(row[3]) !== missionTitle) return;
+
+      scores.push({
+        tanggal: row[0] ? new Date(row[0]).toISOString() : '',
+        emailPemain: cleanEmail_(row[1]),
+        namaPemain: cleanText_(row[2]),
+        skor: Number(row[4]) || 0
+      });
+    });
+  }
+
+  scores.sort((a, b) => {
+    if (b.skor !== a.skor) return b.skor - a.skor;
+    return (a.tanggal || '').localeCompare(b.tanggal || '');
+  });
+
+  return {
+    missionId: cleanText_(missionRow[COL_MISSION_ID]),
+    judul: missionTitle,
+    totalPemain: scores.length,
+    scores
   };
 }
 
@@ -653,6 +705,24 @@ function validateCreator_(creator) {
   if (!creator.kecamatan) throw new Error('Kecamatan wajib diisi.');
 }
 
+function getCreatorProfile(payload) {
+  const sheet = ensureKreatorSheet_();
+  const email = cleanEmail_(payload.email || payload.emailPembuat);
+  if (!email) throw new Error('Email kreator wajib diisi.');
+
+  const rowNumber = findCreatorRow_(sheet, email);
+  if (rowNumber < 2) throw new Error('CREATOR_NOT_REGISTERED');
+
+  const row = sheet.getRange(rowNumber, 1, 1, KREATOR_HEADERS.length).getValues()[0];
+  return {
+    email: cleanEmail_(row[0]),
+    namaLengkap: cleanText_(row[1]),
+    npsn: cleanText_(row[2]),
+    namaSekolah: cleanText_(row[3]),
+    kecamatan: cleanText_(row[4])
+  };
+}
+
 function registerPlayer(payload) {
   const sheet = ensurePemainSheet_();
   const sekolah = getSekolahByNpsn(payload.npsn);
@@ -696,6 +766,77 @@ function loginPlayer(payload) {
   };
 }
 
+function getPlayerDashboard(payload) {
+  const playerSheet = ensurePemainSheet_();
+  const email = cleanEmail_(payload.email || payload.emailPemain || payload.idUser);
+  if (!email) throw new Error('Email pemain wajib diisi.');
+
+  const rowNumber = findPlayerRow_(playerSheet, email);
+  if (rowNumber < 2) throw new Error('PLAYER_NOT_REGISTERED');
+
+  const playerRow = playerSheet.getRange(rowNumber, 1, 1, PEMAIN_HEADERS.length).getValues()[0];
+  const player = {
+    email: cleanEmail_(playerRow[0]),
+    namaLengkap: cleanText_(playerRow[1]),
+    npsn: cleanText_(playerRow[2]),
+    namaSekolah: cleanText_(playerRow[3]),
+    kecamatan: cleanText_(playerRow[4])
+  };
+
+  const missionSources = getMissionSourcesByTitle_();
+
+  const gameSheet = ensurePermainanSheet_();
+  const history = [];
+  if (gameSheet.getLastRow() >= 2) {
+    const rows = gameSheet.getRange(2, 1, gameSheet.getLastRow() - 1, PERMAINAN_HEADERS.length).getValues();
+    rows.forEach(row => {
+      if (cleanEmail_(row[1]) !== email) return;
+
+      history.push({
+        tanggal: row[0] ? new Date(row[0]).toISOString() : '',
+        namaPemain: cleanText_(row[2]),
+        judulMisi: cleanText_(row[3]),
+        videoId: missionSources[cleanText_(row[3])] || '',
+        skor: Number(row[4]) || 0,
+        daftarJawaban: cleanText_(row[5])
+      });
+    });
+  }
+
+  history.sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+  const totalMisi = new Set(history.map(item => item.judulMisi).filter(Boolean)).size;
+  const skorTertinggi = history.reduce((max, item) => Math.max(max, item.skor), 0);
+  const rataRataSkor = history.length
+    ? Math.round(history.reduce((sum, item) => sum + item.skor, 0) / history.length)
+    : 0;
+
+  return {
+    player,
+    summary: {
+      totalMain: history.length,
+      totalMisi,
+      skorTertinggi,
+      rataRataSkor
+    },
+    history
+  };
+}
+
+function getMissionSourcesByTitle_() {
+  const sheet = getOrCreateSheet_(PERTANYAAN_SHEET_NAME, PERTANYAAN_HEADERS);
+  const sources = {};
+  if (sheet.getLastRow() < 2) return sources;
+
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, PERTANYAAN_HEADERS.length).getValues();
+  rows.forEach(row => {
+    const title = cleanText_(row[COL_JUDUL]);
+    if (title && !sources[title]) sources[title] = cleanText_(row[COL_SUMBER]);
+  });
+
+  return sources;
+}
+
 function validatePlayer_(player) {
   if (!player.email) throw new Error('Email wajib diisi.');
   if (!isBelajarEmail_(player.email)) throw new Error('Email harus memakai domain .belajar.id.');
@@ -725,6 +866,40 @@ function findCreatorRow_(sheet, email) {
   }
 
   return -1;
+}
+
+function getCreatorNamesByEmail_() {
+  const sheet = ensureKreatorSheet_();
+  const names = {};
+  if (sheet.getLastRow() < 2) return names;
+
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, KREATOR_HEADERS.length).getValues();
+  rows.forEach(row => {
+    const email = cleanEmail_(row[0]);
+    if (email) {
+      names[email] = {
+        namaLengkap: cleanText_(row[1]),
+        namaSekolah: cleanText_(row[3]),
+        kecamatan: cleanText_(row[4])
+      };
+    }
+  });
+
+  return names;
+}
+
+function getMissionPlayCountsByTitle_() {
+  const sheet = getOrCreateSheet_(PERMAINAN_SHEET_NAME, PERMAINAN_HEADERS);
+  const counts = {};
+  if (sheet.getLastRow() < 2) return counts;
+
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, PERMAINAN_HEADERS.length).getValues();
+  rows.forEach(row => {
+    const title = cleanText_(row[3]);
+    if (title) counts[title] = (counts[title] || 0) + 1;
+  });
+
+  return counts;
 }
 
 /**
@@ -770,6 +945,8 @@ function getSemuaMisi() {
     const sheet = ss.getSheetByName(PERTANYAAN_SHEET_NAME);
     if (!sheet) return [];
     const data = sheet.getDataRange().getValues();
+    const creatorNames = getCreatorNamesByEmail_();
+    const playCounts = getMissionPlayCountsByTitle_();
 
     return data.slice(1)
       .filter(row => row[COL_MISSION_ID] && row[COL_JUDUL] && row[COL_SUMBER])
@@ -777,8 +954,15 @@ function getSemuaMisi() {
         const mission = formatMissionForGame_(row);
         mission.kelas = cleanText_(row[COL_KELAS]);
         mission.kategori = cleanText_(row[COL_KATEGORI]);
+        const creatorInfo = creatorNames[rowOwnerKey_(row)] || {};
+        mission.namaKreator = creatorInfo.namaLengkap || rowOwnerKey_(row) || '-';
+        mission.namaSekolahKreator = creatorInfo.namaSekolah || '-';
+        mission.kecamatanKreator = creatorInfo.kecamatan || '-';
+        mission.dibuatPada = row[COL_DIBUAT] ? new Date(row[COL_DIBUAT]).toISOString() : '';
+        mission.jumlahDimainkan = playCounts[cleanText_(row[COL_JUDUL])] || 0;
         return mission;
-      });
+      })
+      .sort((a, b) => (b.dibuatPada || '').localeCompare(a.dibuatPada || ''));
   } catch(e) { return []; }
 }
 

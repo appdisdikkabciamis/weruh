@@ -33,6 +33,26 @@
       margin: 0 auto;
     }
 
+    .creator-topbar {
+      align-items: center;
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .creator-top-actions {
+      align-items: center;
+      display: none;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    body:not(.login-mode) .creator-top-actions {
+      display: flex;
+    }
+
     .hero-card,
     .panel-card {
       background: rgba(255, 255, 255, 0.9);
@@ -47,18 +67,48 @@
     }
 
     body.login-mode {
-      align-items: center;
-      display: flex;
-      justify-content: center;
+      display: block;
     }
 
     body.login-mode .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 56px);
+      max-width: 1180px;
+      position: relative;
+      width: 100%;
+    }
+
+    body.login-mode .creator-topbar {
+      justify-content: flex-start;
+      margin-bottom: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 2;
+    }
+
+    body.login-mode #quizForm {
+      align-items: flex-start;
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      padding-top: 0;
+      width: 100%;
+    }
+
+    body.login-mode #quizForm > .row {
       max-width: 520px;
       width: 100%;
     }
 
     body.login-mode .hero-card,
     body.login-mode .app-content {
+      display: none;
+    }
+
+    body:not(.login-mode) .hero-card {
       display: none;
     }
 
@@ -75,12 +125,12 @@
     }
 
     body:not(.login-mode) .creator-login-card {
-      background: rgba(255, 255, 255, 0.9);
-      border: 6px solid var(--hero-purple);
-      border-radius: 30px;
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 34px;
       box-shadow: 0 12px 0 var(--hero-dark);
       max-width: none;
-      padding: 18px 22px;
+      padding: 24px 26px;
       text-align: left;
     }
 
@@ -92,23 +142,83 @@
       display: none;
     }
 
-    body.login-mode .creator-logout-btn {
+    body.login-mode .creator-logout-btn,
+    body.login-mode .creator-dashboard-card {
+      display: none;
+    }
+
+    body:not(.login-mode) .creator-login-card {
       display: none;
     }
 
     body:not(.login-mode) .creator-login-title {
       color: var(--hero-purple);
       font-family: "Bangers", cursive;
-      font-size: 28px;
+      font-size: 42px;
       letter-spacing: 1px;
       margin: 0;
     }
 
-    body:not(.login-mode) .creator-login-card {
+    .creator-dashboard-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    body.login-mode .creator-dashboard-copy {
+      display: contents;
+    }
+
+    .creator-dashboard-subtitle {
+      color: #655d7d;
+      display: none;
+      font-weight: 900;
+      margin: 4px 0 0;
+      overflow-wrap: anywhere;
+    }
+
+    body:not(.login-mode) .creator-dashboard-subtitle {
+      display: block;
+    }
+
+    .creator-dashboard-actions {
       align-items: center;
-      display: flex;
+      display: none;
+      flex-wrap: wrap;
       gap: 12px;
-      justify-content: space-between;
+      justify-content: flex-end;
+    }
+
+    body:not(.login-mode) .creator-dashboard-actions {
+      display: flex;
+    }
+
+    .creator-profile-grid {
+      display: grid;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .creator-profile-row {
+      border-bottom: 2px solid rgba(81, 73, 127, 0.18);
+      padding: 7px 0;
+    }
+
+    .creator-profile-row:last-child {
+      border-bottom: 0;
+    }
+
+    .creator-profile-label {
+      color: #655d7d;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .creator-profile-value {
+      color: var(--hero-purple);
+      font-size: 16px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
     }
 
     .creator-logout-btn {
@@ -137,12 +247,8 @@
       color: var(--hero-purple);
       font-family: "Bangers", cursive;
       font-size: 18px;
-      left: 16px;
       padding: 10px 16px;
-      position: fixed;
       text-decoration: none;
-      top: 16px;
-      z-index: 9999;
     }
 
     .back-home-btn:hover,
@@ -164,6 +270,10 @@
       max-width: 450px;
       padding: 40px;
       text-align: center;
+    }
+
+    body.login-mode .creator-login-card {
+      margin-top: 0;
     }
 
     .creator-login-icon {
@@ -243,9 +353,65 @@
       text-align: center;
     }
 
+    .creator-dashboard-card {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 34px;
+      box-shadow: 0 12px 0 var(--hero-dark);
+      margin-bottom: 24px;
+      padding: 26px;
+    }
+
+    .creator-dashboard-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 46px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .creator-dashboard-lead {
+      color: #655d7d;
+      font-weight: 900;
+      margin: 6px 0 0;
+    }
+
+    .creator-stat-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 20px;
+    }
+
+    .creator-stat {
+      background: var(--light-purple);
+      border: 4px solid var(--hero-purple);
+      border-radius: 22px;
+      box-shadow: 0 6px 0 var(--hero-purple);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .creator-stat strong {
+      color: var(--hero-purple);
+      display: block;
+      font-family: "Bangers", cursive;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .creator-stat span {
+      color: #655d7d;
+      font-weight: 900;
+    }
+
     .panel-card {
       padding: 24px;
       height: 100%;
+    }
+
+    #missionDashboard.panel-card {
+      height: auto;
     }
 
     .header-title {
@@ -361,8 +527,75 @@
 
     .mission-list {
       display: grid;
-      gap: 10px;
+      gap: 20px;
       margin-top: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .mission-filter-panel {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      margin: 18px auto 0;
+      width: 100%;
+    }
+
+    .mission-filter-panel select {
+      appearance: auto;
+      background: white;
+      border: 4px solid var(--hero-purple);
+      border-radius: 16px;
+      box-shadow: 0 5px 0 var(--hero-dark);
+      color: var(--hero-purple);
+      cursor: pointer;
+      font-family: "Nunito", sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      padding: 12px 14px;
+      width: 100%;
+    }
+
+    .mission-entry-summary {
+      color: var(--hero-purple);
+      font-weight: 900;
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .mission-pagination {
+      align-items: center;
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .mission-pagination button {
+      background: white;
+      border: 3px solid var(--hero-purple);
+      border-radius: 14px;
+      box-shadow: 0 5px 0 var(--hero-purple);
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 18px;
+      padding: 10px 14px;
+      transition: 0.1s;
+    }
+
+    .mission-pagination button:hover:not(:disabled) {
+      background: var(--hero-gold);
+    }
+
+    .mission-pagination button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .mission-pagination .page-indicator {
+      color: var(--hero-purple);
+      font-weight: 900;
+      padding: 0 8px;
     }
 
     .dashboard-header {
@@ -391,16 +624,66 @@
     }
 
     .mission-list-item {
-      align-items: center;
+      cursor: default;
       background: white;
       border: 4px solid var(--hero-purple);
       border-radius: 20px;
       box-shadow: 0 6px 0 var(--hero-purple);
-      display: grid;
-      gap: 10px;
-      grid-template-columns: minmax(0, 1fr) auto;
-      padding: 16px;
+      padding: 20px;
+      text-align: center;
       transition: 0.2s;
+    }
+
+    .mission-preview {
+      align-items: center;
+      background: #151226;
+      border: 4px solid var(--hero-purple);
+      border-radius: 18px;
+      display: flex;
+      height: 150px;
+      justify-content: center;
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+
+    .mission-preview img {
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .mission-preview .play-badge {
+      align-items: center;
+      background: rgba(255, 215, 0, 0.95);
+      border: 3px solid var(--hero-purple);
+      border-radius: 50%;
+      color: var(--hero-purple);
+      display: flex;
+      font-family: "Bangers", cursive;
+      font-size: 28px;
+      height: 58px;
+      justify-content: center;
+      left: 50%;
+      padding-left: 4px;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px;
+    }
+
+    .web-preview {
+      color: white;
+      flex-direction: column;
+      font-weight: 900;
+      gap: 8px;
+      padding: 18px;
+    }
+
+    .web-preview span:first-child {
+      font-size: 42px;
+      line-height: 1;
     }
 
     .mission-list-item:hover {
@@ -412,13 +695,23 @@
       color: var(--hero-purple);
       display: block;
       font-family: "Bangers", cursive;
-      font-size: 24px;
+      font-size: 26px;
       letter-spacing: 0.5px;
+      margin-top: 6px;
     }
 
     .mission-list-item span {
       color: #6f687c;
-      font-size: 0.82rem;
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    .mission-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 14px;
     }
 
     .question-builder {
@@ -513,6 +806,170 @@
       justify-content: center;
       min-height: 300px;
       padding: 28px;
+      text-align: center;
+    }
+
+    .preview-toolbar {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .preview-title {
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 32px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .preview-stage {
+      background: #000;
+      border: 6px solid var(--hero-purple);
+      border-radius: 25px;
+      box-shadow: 0 10px 0 var(--hero-dark);
+      min-height: 460px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #previewPlayer,
+    #previewWeb {
+      border: none;
+      display: none;
+      height: 460px;
+      width: 100%;
+    }
+
+    .preview-empty {
+      align-items: center;
+      color: #d9d0ff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      min-height: 300px;
+      padding: 28px;
+      text-align: center;
+    }
+
+    #previewQuizArea {
+      background: white;
+      border: 8px solid var(--hero-purple);
+      border-radius: 30px;
+      box-shadow: 0 0 100px rgba(0, 0, 0, 0.7);
+      display: none;
+      left: 50%;
+      max-height: calc(100% - 36px);
+      max-width: min(92%, 760px);
+      overflow: auto;
+      padding: 22px 24px;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 32px);
+    }
+
+    #previewToast {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      transform: translate(-50%, -20px);
+      z-index: 2000;
+      min-width: 220px;
+      max-width: calc(100% - 24px);
+      padding: 12px 18px;
+      border-radius: 16px;
+      border: 4px solid var(--hero-gold);
+      background: var(--hero-purple);
+      color: #fff;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 8px 0 var(--hero-dark), 0 0 35px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #previewToast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .preview-end {
+      background: linear-gradient(135deg, #51497f 0%, #2c254a 100%);
+      border: 6px solid var(--hero-gold);
+      border-radius: 24px;
+      color: white;
+      margin-top: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .preview-end strong {
+      color: var(--hero-gold);
+      display: block;
+      font-family: "Bangers", cursive;
+      font-size: 30px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .score-table-wrap {
+      overflow-x: auto;
+    }
+
+    .score-table {
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      width: 100%;
+    }
+
+    .score-table th {
+      color: var(--hero-purple);
+      font-size: 0.85rem;
+      font-weight: 900;
+      padding: 0 10px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .score-table td {
+      background: white;
+      border-bottom: 3px solid var(--hero-purple);
+      border-top: 3px solid var(--hero-purple);
+      font-weight: 900;
+      padding: 12px 10px;
+      vertical-align: middle;
+    }
+
+    .score-table td:first-child {
+      border-left: 3px solid var(--hero-purple);
+      border-radius: 15px 0 0 15px;
+      color: var(--hero-purple);
+      font-family: "Bangers", cursive;
+      font-size: 24px;
+      text-align: center;
+      width: 58px;
+    }
+
+    .score-table td:last-child {
+      border-radius: 0 15px 15px 0;
+      border-right: 3px solid var(--hero-purple);
+    }
+
+    .score-pill {
+      background: var(--hero-gold);
+      border: 3px solid var(--hero-purple);
+      border-radius: 14px;
+      color: var(--hero-purple);
+      display: inline-block;
+      font-family: "Bangers", cursive;
+      font-size: 26px;
+      min-width: 58px;
+      padding: 5px 10px;
       text-align: center;
     }
 
@@ -697,7 +1154,7 @@
       display: none;
       inset: 0;
       justify-content: center;
-      padding: 20px;
+      padding: 12px;
       position: fixed;
       z-index: 2000;
     }
@@ -711,24 +1168,26 @@
       border: 8px solid var(--hero-purple);
       border-radius: 36px;
       box-shadow: 0 15px 0 var(--hero-dark), 0 0 80px rgba(0, 0, 0, 0.35);
+      max-height: calc(100vh - 24px);
       max-width: 460px;
-      padding: 32px;
+      overflow: auto;
+      padding: 22px;
       text-align: center;
       width: 100%;
     }
 
     .mission-modal-icon {
-      font-size: 58px;
+      font-size: 42px;
       line-height: 1;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .mission-modal-title {
       color: var(--hero-purple);
       font-family: "Bangers", cursive;
-      font-size: 36px;
+      font-size: 30px;
       letter-spacing: 1px;
-      margin: 0 0 8px;
+      margin: 0 0 6px;
     }
 
     .mission-modal-text {
@@ -746,13 +1205,30 @@
     @media (max-width: 768px) {
       body { padding: 14px 10px; }
       body.login-mode { padding: 20px; }
+      body.login-mode .app-shell { min-height: calc(100vh - 40px); }
+      body.login-mode .creator-topbar { align-items: flex-start; }
+      body.login-mode .creator-topbar .back-home-btn { width: auto; }
+      .creator-topbar { align-items: stretch; flex-direction: column; }
+      .creator-top-actions { justify-content: stretch; }
+      .creator-top-actions .btn,
+      .creator-top-actions .creator-logout-btn,
+      .creator-topbar .back-home-btn { text-align: center; width: 100%; }
       .creator-login-card { border-radius: 30px; padding: 28px 22px; }
+      body:not(.login-mode) .creator-login-card { align-items: stretch; flex-direction: column; }
+      body:not(.login-mode) .creator-login-card::before { font-size: 48px; }
+      .creator-dashboard-card { border-width: 4px; border-radius: 22px; box-shadow: 0 8px 0 var(--hero-dark); padding: 18px; }
+      .creator-dashboard-title { font-size: 36px; }
+      .creator-stat-grid { grid-template-columns: 1fr; }
+      .creator-dashboard-actions { justify-content: stretch; }
+      .creator-dashboard-actions .btn,
+      .creator-dashboard-actions .creator-logout-btn { width: 100%; }
       .hero-card, .panel-card { border-width: 4px; border-radius: 22px; box-shadow: 0 8px 0 var(--hero-dark); padding: 18px; }
       .header-title { font-size: 34px; }
       .step-badge { font-size: 17px; box-shadow: 0 4px 0 var(--hero-purple); }
       #player, #webPreview { height: 260px; }
       .video-stage, .video-empty { min-height: 260px; }
       .mission-grid { grid-template-columns: 1fr; }
+      .mission-filter-panel { grid-template-columns: 1fr; }
       .mission-field { gap: 5px; }
       .mission-field .form-label { min-height: auto; }
       .owner-grid, .mission-list-item { grid-template-columns: 1fr; }
@@ -760,14 +1236,33 @@
       .compact-row, .option-grid { grid-template-columns: 1fr; }
       .summary-grid { grid-template-columns: 1fr; }
       .dashboard-header, .editor-toolbar { align-items: stretch; flex-direction: column; }
-      .mission-modal-card { border-width: 5px; border-radius: 28px; padding: 24px 18px; }
+      .mission-modal-backdrop { align-items: flex-start; padding: 8px; }
+      .mission-modal-card { border-width: 5px; border-radius: 22px; max-height: calc(100vh - 16px); padding: 14px; }
+      .mission-modal-icon { font-size: 30px; margin-bottom: 3px; }
+      .mission-modal-title { font-size: 26px; margin-bottom: 4px; }
+      .creator-profile-row { padding: 5px 0; }
+      .creator-profile-label { font-size: 11px; }
+      .creator-profile-value { font-size: 14px; }
       .mission-modal-actions { grid-template-columns: 1fr; }
+      .preview-toolbar { align-items: stretch; flex-direction: column; }
+      .preview-title { font-size: 28px; }
+      #previewPlayer, #previewWeb { height: 320px; }
+      .preview-stage, .preview-empty { min-height: 320px; }
+      #previewQuizArea { padding: 18px; max-width: calc(100% - 20px); }
     }
   </style>
 </head>
 <body class="login-mode">
-  <a id="backHomeLink" class="back-home-btn" href="index.html">⬅ KEMBALI</a>
   <div class="app-shell">
+    <div class="creator-topbar">
+      <a id="backHomeLink" class="back-home-btn" href="index.html">⬅ KEMBALI</a>
+      <div class="creator-top-actions">
+        <button type="button" class="btn btn-soft" onclick="openCreatorProfileModal()">DATA KREATOR</button>
+        <a class="btn btn-soft" href="https://docs.google.com/presentation/d/1jeEzTG9BnZzb669E_gJwnN97OClaBdaWpc9PfhocDMM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">PANDUAN</a>
+        <button type="button" class="creator-logout-btn" onclick="logoutCreator()">LOGOUT</button>
+      </div>
+    </div>
+
     <section class="hero-card">
       <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
         <div>
@@ -792,7 +1287,10 @@
         <div class="col-12">
           <div class="creator-login-card" id="creatorLoginCard">
             <div class="creator-login-icon">✏️</div>
-            <h1 class="creator-login-title">KREATOR MISI</h1>
+            <div class="creator-dashboard-copy">
+              <h1 class="creator-login-title">KREATOR MISI</h1>
+              <p id="creatorDashboardSubtitle" class="creator-dashboard-subtitle">Kelola misi dan pantau aktivitas pemain.</p>
+            </div>
             <p class="creator-login-subtitle">Masuk dengan email belajar.id untuk mengelola Input Explorasi Konten.</p>
             <input id="emailPembuatInput" type="email" name="emailPembuat" class="creator-login-input" placeholder="EMAIL BELAJAR.ID..." required>
             <div class="creator-login-actions">
@@ -800,8 +1298,21 @@
               <a class="btn-hero-login btn-hero-secondary" href="daftar.html">DAFTAR KREATOR</a>
             </div>
             <div id="loginStatus" class="login-status mt-3 d-none"></div>
-            <button type="button" class="creator-logout-btn" onclick="logoutCreator()">LOGOUT</button>
+            <div class="creator-dashboard-actions">
+              <button type="button" class="btn btn-soft" onclick="openCreatorProfileModal()">DATA KREATOR</button>
+              <button type="button" class="creator-logout-btn" onclick="logoutCreator()">LOGOUT</button>
+            </div>
           </div>
+          <section id="creatorDashboardCard" class="creator-dashboard-card">
+            <h1 class="creator-dashboard-title">DASHBOARD KREATOR</h1>
+            <p id="creatorDashboardLead" class="creator-dashboard-lead">Kelola misi dan pantau aktivitas pemain.</p>
+            <div class="creator-stat-grid">
+              <div class="creator-stat"><strong id="creatorTotalMissions">0</strong><span>Total Misi</span></div>
+              <div class="creator-stat"><strong id="creatorTotalClasses">0</strong><span>Kelas Berbeda</span></div>
+              <div class="creator-stat"><strong id="creatorTotalCategories">0</strong><span>Kategori</span></div>
+              <div class="creator-stat"><strong id="creatorTotalPlayers">0</strong><span>Total Pemain</span></div>
+            </div>
+          </section>
           <div id="missionDashboard" class="panel-card mt-3 d-none">
             <div class="dashboard-header">
               <div>
@@ -810,7 +1321,70 @@
               </div>
               <button type="button" class="btn btn-purple" onclick="startNewMission()">TAMBAH MISI</button>
             </div>
+            <div id="myMissionFilterPanel" class="mission-filter-panel">
+              <select id="myMissionKelasFilter" onchange="resetMyMissionFiltersAndRender()" aria-label="Filter kelas daftar misi saya">
+                <option value="">Semua Kelas</option>
+              </select>
+              <select id="myMissionKategoriFilter" onchange="resetMyMissionFiltersAndRender()" aria-label="Filter kategori daftar misi saya">
+                <option value="">Semua Kategori</option>
+              </select>
+              <select id="myMissionEntryLimit" onchange="resetMyMissionFiltersAndRender()" aria-label="Jumlah entri daftar misi saya">
+                <option value="6">Tampilkan 6 entri</option>
+                <option value="12">Tampilkan 12 entri</option>
+                <option value="18">Tampilkan 18 entri</option>
+                <option value="24">Tampilkan 24 entri</option>
+                <option value="all">Tampilkan semua</option>
+              </select>
+              <select id="myMissionSortFilter" onchange="resetMyMissionFiltersAndRender()" aria-label="Urutkan daftar misi saya">
+                <option value="newest">Misi terbaru</option>
+                <option value="popular">Paling banyak dimainkan</option>
+              </select>
+            </div>
+            <div id="myMissionSummary" class="mission-entry-summary"></div>
             <div id="myMissionList" class="mission-list"></div>
+            <div id="myMissionPagination" class="mission-pagination"></div>
+          </div>
+          <div id="missionScorePanel" class="panel-card mt-3 d-none">
+            <div class="preview-toolbar">
+              <button type="button" class="btn btn-soft" onclick="closeMissionScores()">KEMBALI KE DAFTAR MISI</button>
+              <span id="scoreTotalBadge" class="time-pill">0 PEMAIN</span>
+            </div>
+            <h2 id="scoreMissionTitle" class="preview-title">SKOR MISI</h2>
+            <p class="mb-3 text-secondary fw-bold">Daftar pemain yang sudah memainkan misi, diurutkan dari skor tertinggi.</p>
+            <div id="scoreListBox" class="score-table-wrap">
+              <div class="empty-state">Pilih tombol Skor pada misi untuk melihat data.</div>
+            </div>
+          </div>
+          <div id="missionPreviewPanel" class="panel-card mt-3 d-none">
+            <div class="preview-toolbar">
+              <button type="button" class="btn btn-soft" onclick="closeMissionPreview()">KEMBALI KE DAFTAR MISI</button>
+              <span class="time-pill">PREVIEW MISI KREATOR</span>
+            </div>
+            <div class="preview-toolbar" style="margin-top: 0;">
+              <div>
+                <h2 id="previewMissionTitle" class="preview-title">PREVIEW MISI</h2>
+                <p id="previewMissionSubtitle" class="mb-0 text-secondary fw-bold">Mode lihat saja tanpa skor.</p>
+              </div>
+            </div>
+            <div class="preview-stage">
+              <div id="previewEmpty" class="preview-empty">
+                <strong>Preview belum dimuat</strong>
+                <span>Memuat misi yang dipilih...</span>
+              </div>
+              <div id="previewPlayer"></div>
+              <iframe id="previewWeb" title="Preview web" allow="autoplay; fullscreen"></iframe>
+              <div id="previewToast" role="status" aria-live="polite"></div>
+              <div id="previewQuizArea">
+                <p id="previewQuestionText" style="font-weight:900; font-size:clamp(18px, 3vw, 24px); color:var(--hero-purple); margin-top:0;"></p>
+                <div id="previewOptionContainer"></div>
+                <button type="button" class="btn btn-purple w-100 mt-2" onclick="previewSubmitAnswer()">KIRIM JAWABAN! 💥</button>
+              </div>
+            </div>
+            <button id="previewStartButton" type="button" class="btn btn-purple w-100 mt-3" style="display:none; background:#2ecc71; color:white;" onclick="previewOpenQuestion()">SAYA SIAP MENJAWAB! 💡</button>
+            <div id="previewEndBox" class="preview-end d-none">
+              <strong>PREVIEW SELESAI</strong>
+              <div>Semua pertanyaan sudah ditampilkan. Tidak ada skor pada mode kreator.</div>
+            </div>
           </div>
         </div>
 
@@ -824,7 +1398,7 @@
         </div>
         <div class="col-12">
           <div class="panel-card mb-3">
-            <div class="step-badge mb-3"><span>2</span>Data Misi</div>
+            <div class="step-badge mb-3"><span>1</span>Data Misi</div>
             <div class="mission-grid">
               <div class="mission-field">
                 <label class="form-label" for="judulInput">Judul Misi</label>
@@ -868,7 +1442,7 @@
         <div class="col-lg-6">
           <div class="panel-card">
             <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
-              <div class="step-badge"><span>3</span>Preview dan Tandai Video</div>
+              <div class="step-badge"><span>2</span>Preview dan Tandai Video</div>
               <span class="time-pill">Posisi Video: <span id="currentTimeText">00:00</span></span>
             </div>
             <div class="video-stage">
@@ -887,7 +1461,7 @@
 
         <div class="col-lg-6">
           <div class="panel-card h-100 question-builder">
-            <div class="step-badge mb-3"><span>4</span>Buat Pertanyaan</div>
+            <div class="step-badge mb-3"><span>3</span>Buat Pertanyaan</div>
             <div class="compact-row">
               <div class="form-block">
                 <label class="form-label" for="timeInput">Detik Berhenti</label>
@@ -922,7 +1496,7 @@
         <div class="col-12">
           <div class="panel-card">
             <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
-              <div class="step-badge"><span>5</span>Daftar Pertanyaan</div>
+              <div class="step-badge"><span>4</span>Daftar Pertanyaan</div>
               <div class="summary-grid flex-grow-1">
                 <div class="summary-box"><strong id="totalQuestions">0</strong><span>Soal</span></div>
                 <div class="summary-box"><strong id="firstMarker">-</strong><span>Awal</span></div>
@@ -955,6 +1529,17 @@
     </div>
   </div>
 
+  <div id="creatorProfileModal" class="mission-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="creatorProfileTitle">
+    <div class="mission-modal-card">
+      <div class="mission-modal-icon">✏️</div>
+      <h2 id="creatorProfileTitle" class="mission-modal-title">DATA KREATOR</h2>
+      <div id="creatorProfileBox" class="creator-profile-grid"></div>
+      <div class="d-grid mt-3">
+        <button type="button" class="btn btn-purple" onclick="closeCreatorProfileModal()">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function resolvePageUrl(page) {
       return page + '.html';
@@ -963,6 +1548,7 @@
     document.getElementById('backHomeLink').href = resolvePageUrl('index');
 
     const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
+    const CREATOR_SESSION_KEY = 'weruhCreatorSession';
     let ytPlayer = null;
     let ytReady = false;
     let activeSourceType = '';
@@ -973,14 +1559,31 @@
     let activeMissionId = '';
     let loggedInOwner = null;
     let pendingDeleteMissionId = '';
+    let previewMission = null;
+    let previewQuestions = [];
+    let previewIndex = 0;
+    let previewYtPlayer = null;
+    let previewYtReady = false;
+    let previewSourceType = '';
+    let previewTicker = null;
+    let previewWaitingForContinue = false;
+    let previewActiveQuestionTime = null;
+    let previewQuestionTriggered = false;
+    let previewLastPlaybackTime = 0;
+    let previewCurrentQuestionIndex = -1;
+    let creatorProfile = null;
+    let myMissionsCache = [];
+    let myMissionPage = 1;
 
     window.onYouTubeIframeAPIReady = function() {
       ytReady = true;
+      previewYtReady = true;
     };
 
     function ensureYouTubeApiLoaded() {
       if (window.YT && window.YT.Player) {
         ytReady = true;
+        previewYtReady = true;
         return;
       }
 
@@ -1223,6 +1826,100 @@
       };
     }
 
+    function saveCreatorSession(owner) {
+      if (!owner || !owner.emailPembuat) return;
+      localStorage.setItem(CREATOR_SESSION_KEY, JSON.stringify({
+        emailPembuat: owner.emailPembuat,
+        profile: owner.profile || creatorProfile || null
+      }));
+    }
+
+    function loadCreatorSession() {
+      try {
+        return JSON.parse(localStorage.getItem(CREATOR_SESSION_KEY) || 'null');
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearCreatorSession() {
+      localStorage.removeItem(CREATOR_SESSION_KEY);
+    }
+
+    function normalizeCreatorProfile(profile, fallbackEmail) {
+      const data = profile || {};
+      return {
+        email: data.email || data.emailPembuat || fallbackEmail || '',
+        namaLengkap: data.namaLengkap || '',
+        npsn: data.npsn || '',
+        namaSekolah: data.namaSekolah || '',
+        kecamatan: data.kecamatan || ''
+      };
+    }
+
+    async function loadCreatorProfile(owner) {
+      const email = owner && owner.emailPembuat ? owner.emailPembuat : '';
+      if (!email) return null;
+
+      try {
+        creatorProfile = normalizeCreatorProfile(await callApi('getCreatorProfile', { emailPembuat: email }), email);
+      } catch (err) {
+        creatorProfile = normalizeCreatorProfile(null, email);
+      }
+
+      saveCreatorSession({ emailPembuat: email, profile: creatorProfile });
+      renderCreatorProfile(creatorProfile);
+      return creatorProfile;
+    }
+
+    function updateCreatorDashboard(owner) {
+      const email = owner && owner.emailPembuat ? owner.emailPembuat : '';
+      document.getElementById('creatorDashboardSubtitle').innerText = email
+        ? 'Login sebagai: ' + email
+        : 'Kelola misi dan pantau aktivitas pemain.';
+      document.getElementById('creatorDashboardLead').innerText = email
+        ? 'Login sebagai: ' + email + '. Ini ringkasan ruang kreatormu.'
+        : 'Kelola misi dan pantau aktivitas pemain.';
+      renderCreatorProfile(owner || getOwnerPayload());
+    }
+
+    function updateCreatorStats(missions) {
+      const list = Array.isArray(missions) ? missions : [];
+      const classes = new Set(list.map(item => String(item.kelas || '').trim()).filter(Boolean));
+      const categories = new Set(list.map(item => String(item.kategori || '').trim()).filter(Boolean));
+      const totalPlayers = list.reduce((sum, item) => sum + (Number(item.jumlahDimainkan) || 0), 0);
+
+      document.getElementById('creatorTotalMissions').innerText = list.length;
+      document.getElementById('creatorTotalClasses').innerText = classes.size;
+      document.getElementById('creatorTotalCategories').innerText = categories.size;
+      document.getElementById('creatorTotalPlayers').innerText = totalPlayers;
+    }
+
+    function renderCreatorProfile(owner) {
+      const fallbackEmail = owner && owner.emailPembuat ? owner.emailPembuat : document.getElementById('emailPembuatInput').value.trim().toLowerCase();
+      const profile = normalizeCreatorProfile(owner && (owner.email || owner.namaLengkap || owner.npsn || owner.namaSekolah || owner.kecamatan) ? owner : creatorProfile, fallbackEmail);
+      document.getElementById('creatorProfileBox').innerHTML = `
+        ${creatorProfileRow('Nama', profile.namaLengkap || '-')}
+        ${creatorProfileRow('Email', profile.email || '-')}
+        ${creatorProfileRow('NPSN', profile.npsn || '-')}
+        ${creatorProfileRow('Sekolah', profile.namaSekolah || '-')}
+        ${creatorProfileRow('Kecamatan', profile.kecamatan || '-')}
+      `;
+    }
+
+    function creatorProfileRow(label, value) {
+      return `<div class="creator-profile-row"><div class="creator-profile-label">${escapeHtml(label)}</div><div class="creator-profile-value">${escapeHtml(String(value))}</div></div>`;
+    }
+
+    function openCreatorProfileModal() {
+      renderCreatorProfile(creatorProfile || loggedInOwner || getOwnerPayload());
+      document.getElementById('creatorProfileModal').classList.add('is-open');
+    }
+
+    function closeCreatorProfileModal() {
+      document.getElementById('creatorProfileModal').classList.remove('is-open');
+    }
+
     function validateOwnerFields() {
       const owner = getOwnerPayload();
       if (!owner.emailPembuat) {
@@ -1269,8 +1966,12 @@
       if (!owner) return;
 
       loggedInOwner = owner;
+      creatorProfile = null;
+      saveCreatorSession(owner);
       document.body.classList.remove('login-mode');
       document.getElementById('emailPembuatInput').value = owner.emailPembuat;
+      updateCreatorDashboard(owner);
+      await loadCreatorProfile(owner);
       showOwnerMessage('Login sebagai: ' + owner.emailPembuat, 'success');
       showMissionDashboard();
       await loadMyMissions();
@@ -1278,21 +1979,59 @@
 
     function logoutCreator() {
       loggedInOwner = null;
+      creatorProfile = null;
+      clearCreatorSession();
+      stopMissionPreview();
+      closeCreatorProfileModal();
       closeDeleteMissionModal();
       document.body.classList.add('login-mode');
       document.getElementById('appContent').classList.add('is-locked');
       document.getElementById('missionDashboard').classList.add('d-none');
+      document.getElementById('missionPreviewPanel').classList.add('d-none');
+      document.getElementById('missionScorePanel').classList.add('d-none');
       document.getElementById('myMissionList').innerHTML = '';
+      document.getElementById('myMissionSummary').innerText = '';
+      document.getElementById('myMissionPagination').innerHTML = '';
+      document.getElementById('myMissionPagination').style.display = 'none';
+      myMissionsCache = [];
+      myMissionPage = 1;
       document.getElementById('loginStatus').className = 'login-status mt-3 d-none';
+      updateCreatorDashboard(null);
+      updateCreatorStats([]);
       resetMissionBuilder(false);
     }
 
     function showMissionDashboard() {
       document.getElementById('appContent').classList.add('is-locked');
+      document.getElementById('missionPreviewPanel').classList.add('d-none');
+      document.getElementById('missionScorePanel').classList.add('d-none');
       document.getElementById('missionDashboard').classList.remove('d-none');
     }
 
+    async function restoreCreatorSession() {
+      const savedOwner = loadCreatorSession();
+      if (!savedOwner || !savedOwner.emailPembuat) return;
+
+      const emailInput = document.getElementById('emailPembuatInput');
+      if (emailInput) emailInput.value = savedOwner.emailPembuat;
+
+      loggedInOwner = { emailPembuat: savedOwner.emailPembuat };
+      document.body.classList.remove('login-mode');
+      updateCreatorDashboard(loggedInOwner);
+      document.getElementById('loginStatus').className = 'login-status mt-3 d-block';
+      document.getElementById('loginStatus').innerText = 'Login sebagai: ' + savedOwner.emailPembuat;
+      document.getElementById('loginStatus').style.borderColor = 'var(--soft-border)';
+      creatorProfile = normalizeCreatorProfile(savedOwner.profile, savedOwner.emailPembuat);
+      renderCreatorProfile(creatorProfile);
+      showMissionDashboard();
+      await loadCreatorProfile(loggedInOwner);
+      await loadMyMissions();
+    }
+
     function showMissionEditor(mode) {
+      stopMissionPreview();
+      document.getElementById('missionPreviewPanel').classList.add('d-none');
+      document.getElementById('missionScorePanel').classList.add('d-none');
       document.getElementById('missionDashboard').classList.add('d-none');
       document.getElementById('appContent').classList.remove('is-locked');
       document.getElementById('editorModeLabel').innerText = mode === 'edit' ? 'MODE: EDIT MISI' : 'MODE: TAMBAH MISI';
@@ -1315,43 +2054,543 @@
 
       try {
         const missions = await callApi('getMyMissions', owner);
-        renderMyMissions(missions || []);
+        updateCreatorStats(missions || []);
+        myMissionsCache = missions || [];
+        setupMyMissionFilters();
+        renderMyMissions(myMissionsCache);
       } catch (err) {
+        updateCreatorStats([]);
         list.innerHTML = '';
+        document.getElementById('myMissionSummary').innerText = '';
+        document.getElementById('myMissionPagination').innerHTML = '';
+        document.getElementById('myMissionPagination').style.display = 'none';
         showMessage('Gagal memuat misi: ' + (err.message || err), 'danger');
       }
     }
 
     function renderMyMissions(missions) {
       const list = document.getElementById('myMissionList');
+      const summary = document.getElementById('myMissionSummary');
       list.innerHTML = '';
 
       if (!missions.length) {
+        summary.innerText = 'Menampilkan 0 entri';
+        document.getElementById('myMissionPagination').innerHTML = '';
+        document.getElementById('myMissionPagination').style.display = 'none';
         list.innerHTML = '<div class="empty-state">Belum ada misi untuk email ini. Klik TAMBAH MISI untuk membuat misi baru.</div>';
         return;
       }
 
-      missions.forEach(mission => {
+      const selectedKelas = document.getElementById('myMissionKelasFilter').value;
+      const selectedKategori = document.getElementById('myMissionKategoriFilter').value;
+      const entryLimit = document.getElementById('myMissionEntryLimit').value;
+      const sortMode = document.getElementById('myMissionSortFilter').value;
+      const filteredMissions = missions.filter(mission => {
+        const kelasMatch = !selectedKelas || String(mission.kelas || '') === selectedKelas;
+        const kategoriMatch = !selectedKategori || String(mission.kategori || '') === selectedKategori;
+        return kelasMatch && kategoriMatch;
+      }).sort((a, b) => {
+        if (sortMode === 'popular') {
+          const playDiff = (Number(b.jumlahDimainkan) || 0) - (Number(a.jumlahDimainkan) || 0);
+          if (playDiff !== 0) return playDiff;
+        }
+
+        return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
+      });
+
+      if (!filteredMissions.length) {
+        summary.innerText = 'Menampilkan 0 dari 0 entri';
+        document.getElementById('myMissionPagination').innerHTML = '';
+        document.getElementById('myMissionPagination').style.display = 'none';
+        list.innerHTML = '<div class="empty-state">Tidak ada misi untuk filter ini.</div>';
+        return;
+      }
+
+      const entriesPerPage = entryLimit === 'all' ? filteredMissions.length : Number(entryLimit) || 6;
+      const totalPages = entryLimit === 'all' ? 1 : Math.max(1, Math.ceil(filteredMissions.length / entriesPerPage));
+      if (myMissionPage > totalPages) myMissionPage = totalPages;
+      if (myMissionPage < 1) myMissionPage = 1;
+
+      const startIndex = (myMissionPage - 1) * entriesPerPage;
+      const visibleMissions = filteredMissions.slice(startIndex, startIndex + entriesPerPage);
+      const startLabel = startIndex + 1;
+      const endLabel = Math.min(startIndex + visibleMissions.length, filteredMissions.length);
+      summary.innerText = `Menampilkan ${startLabel}-${endLabel} dari ${filteredMissions.length} entri | Halaman ${myMissionPage} dari ${totalPages}`;
+
+      visibleMissions.forEach(mission => {
         const item = document.createElement('div');
         item.className = 'mission-list-item';
         const safeMissionId = String(mission.missionId || '').replace(/'/g, "\\'");
+        const previewHtml = renderMissionPreview(mission);
         item.innerHTML = `
-          <div>
-            <strong>${escapeHtml(mission.judul || '-')}</strong>
-            <span>Kelas ${escapeHtml(String(mission.kelas || '-'))} - ${escapeHtml(mission.kategori || '-')}</span>
-          </div>
-          <div class="d-flex flex-wrap gap-1 justify-content-end">
+          ${previewHtml}
+          <strong>${escapeHtml(mission.judul || 'Misi')}</strong>
+          <span>Kelas ${escapeHtml(String(mission.kelas || '-'))} - ${escapeHtml(mission.kategori || '-')}</span>
+          <span>Dimainkan: ${escapeHtml(String(mission.jumlahDimainkan || 0))} kali</span>
+          <div class="mission-actions">
             <button type="button" class="btn btn-purple btn-sm" onclick="viewMission('${safeMissionId}')">Lihat</button>
+            <button type="button" class="btn btn-soft btn-sm" onclick="openMissionScores('${safeMissionId}')">Skor</button>
             <button type="button" class="btn btn-soft btn-sm" onclick="editMission('${safeMissionId}')">Edit</button>
             <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteCurrentMission('${safeMissionId}')">Hapus</button>
           </div>
         `;
         list.appendChild(item);
       });
+
+      renderMyMissionPagination(totalPages);
     }
 
-    function viewMission(missionId) {
-      window.location.href = 'game.html?missionId=' + encodeURIComponent(missionId);
+    function renderMyMissionPagination(totalPages) {
+      const pagination = document.getElementById('myMissionPagination');
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        pagination.style.display = 'none';
+        return;
+      }
+
+      const currentPage = myMissionPage;
+      const pageButtons = [];
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) {
+          pageButtons.push(`<button type="button" ${i === currentPage ? 'disabled' : ''} onclick="goToMyMissionPage(${i})">${i}</button>`);
+        }
+      } else {
+        const pages = new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1]);
+        [...pages].filter(page => page >= 1 && page <= totalPages).sort((a, b) => a - b).forEach((page, index, arr) => {
+          if (index > 0 && page - arr[index - 1] > 1) pageButtons.push('<span class="page-indicator">...</span>');
+          pageButtons.push(`<button type="button" ${page === currentPage ? 'disabled' : ''} onclick="goToMyMissionPage(${page})">${page}</button>`);
+        });
+      }
+
+      pagination.innerHTML = `
+        <button type="button" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToMyMissionPage(${currentPage - 1})">Sebelumnya</button>
+        ${pageButtons.join('')}
+        <button type="button" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToMyMissionPage(${currentPage + 1})">Selanjutnya</button>
+      `;
+      pagination.style.display = 'flex';
+    }
+
+    function goToMyMissionPage(page) {
+      myMissionPage = Math.max(1, page);
+      renderMyMissions(myMissionsCache);
+    }
+
+    function resetMyMissionFiltersAndRender() {
+      myMissionPage = 1;
+      renderMyMissions(myMissionsCache);
+    }
+
+    function setupMyMissionFilters() {
+      const kelasFilter = document.getElementById('myMissionKelasFilter');
+      const kategoriFilter = document.getElementById('myMissionKategoriFilter');
+      const selectedKelas = kelasFilter.value;
+      const selectedKategori = kategoriFilter.value;
+      const kelasOptions = [...new Set(myMissionsCache.map(mission => String(mission.kelas || '').trim()).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+      const kategoriOptions = [...new Set(myMissionsCache.map(mission => String(mission.kategori || '').trim()).filter(Boolean))].sort();
+
+      kelasFilter.innerHTML = '<option value="">Semua Kelas</option>' + kelasOptions.map(kelas => `<option value="${escapeHtml(kelas)}">Kelas ${escapeHtml(kelas)}</option>`).join('');
+      kategoriFilter.innerHTML = '<option value="">Semua Kategori</option>' + kategoriOptions.map(kategori => `<option value="${escapeHtml(kategori)}">${escapeHtml(kategori)}</option>`).join('');
+      kelasFilter.value = kelasOptions.includes(selectedKelas) ? selectedKelas : '';
+      kategoriFilter.value = kategoriOptions.includes(selectedKategori) ? selectedKategori : '';
+    }
+
+    function renderMissionPreview(mission) {
+      const youtubeId = getYoutubeId(mission.videoId || mission.id || mission.source || mission.sumber || '');
+      if (youtubeId) {
+        return `<div class="mission-preview"><img src="https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg" alt="Preview ${escapeHtml(String(mission.judul || 'misi'))}"><span class="play-badge">▶</span></div>`;
+      }
+
+      return `<div class="mission-preview web-preview"><span>🌐</span><span>Preview Konten Web</span></div>`;
+    }
+
+    function showMissionPreviewPanel() {
+      document.getElementById('missionDashboard').classList.add('d-none');
+      document.getElementById('missionScorePanel').classList.add('d-none');
+      document.getElementById('appContent').classList.add('is-locked');
+      document.getElementById('missionPreviewPanel').classList.remove('d-none');
+      document.getElementById('loginStatus').className = 'login-status mt-3 d-none';
+    }
+
+    function showMissionScorePanel() {
+      stopMissionPreview();
+      document.getElementById('missionDashboard').classList.add('d-none');
+      document.getElementById('missionPreviewPanel').classList.add('d-none');
+      document.getElementById('appContent').classList.add('is-locked');
+      document.getElementById('missionScorePanel').classList.remove('d-none');
+      document.getElementById('loginStatus').className = 'login-status mt-3 d-none';
+    }
+
+    function closeMissionScores() {
+      document.getElementById('missionScorePanel').classList.add('d-none');
+      document.getElementById('scoreListBox').innerHTML = '<div class="empty-state">Pilih tombol Skor pada misi untuk melihat data.</div>';
+      showMissionDashboard();
+      loadMyMissions();
+    }
+
+    async function openMissionScores(missionId) {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      showMissionScorePanel();
+      document.getElementById('scoreMissionTitle').innerText = 'MEMUAT SKOR...';
+      document.getElementById('scoreTotalBadge').innerText = 'MEMUAT';
+      document.getElementById('scoreListBox').innerHTML = '<div class="empty-state">Memuat daftar skor pemain...</div>';
+
+      try {
+        const data = await callApi('getMissionScores', { ...owner, missionId });
+        renderMissionScores(data);
+      } catch (err) {
+        document.getElementById('scoreMissionTitle').innerText = 'SKOR MISI';
+        document.getElementById('scoreTotalBadge').innerText = '0 PEMAIN';
+        document.getElementById('scoreListBox').innerHTML = '<div class="empty-state">Gagal memuat skor: ' + escapeHtml(err.message || err) + '</div>';
+      }
+    }
+
+    function renderMissionScores(data) {
+      const scores = data.scores || [];
+      document.getElementById('scoreMissionTitle').innerText = data.judul || 'Skor Misi';
+      document.getElementById('scoreTotalBadge').innerText = scores.length + ' PEMAIN';
+
+      if (!scores.length) {
+        document.getElementById('scoreListBox').innerHTML = '<div class="empty-state">Belum ada pemain yang memainkan misi ini.</div>';
+        return;
+      }
+
+      document.getElementById('scoreListBox').innerHTML = `
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>Peringkat</th>
+              <th>Nama Pemain</th>
+              <th>Email</th>
+              <th>Tanggal</th>
+              <th>Skor</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${scores.map((item, index) => `
+              <tr>
+                <td>#${index + 1}</td>
+                <td>${escapeHtml(item.namaPemain || '-')}</td>
+                <td>${escapeHtml(item.emailPemain || '-')}</td>
+                <td>${escapeHtml(formatDateTime(item.tanggal))}</td>
+                <td><span class="score-pill">${escapeHtml(String(item.skor || 0))}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '-';
+      return date.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function closeMissionPreview() {
+      stopMissionPreview();
+      document.getElementById('missionPreviewPanel').classList.add('d-none');
+      showMissionDashboard();
+      loadMyMissions();
+    }
+
+    function stopMissionPreview() {
+      if (previewTicker) {
+        clearInterval(previewTicker);
+        previewTicker = null;
+      }
+
+      previewWaitingForContinue = false;
+      previewIndex = 0;
+      previewQuestions = [];
+      previewMission = null;
+      previewSourceType = '';
+      previewActiveQuestionTime = null;
+      previewQuestionTriggered = false;
+      previewLastPlaybackTime = 0;
+      previewCurrentQuestionIndex = -1;
+
+      const previewEmpty = document.getElementById('previewEmpty');
+      const previewPlayer = document.getElementById('previewPlayer');
+      const previewWeb = document.getElementById('previewWeb');
+      const previewQuizArea = document.getElementById('previewQuizArea');
+      const previewStartButton = document.getElementById('previewStartButton');
+      const previewEndBox = document.getElementById('previewEndBox');
+
+      if (previewYtPlayer && typeof previewYtPlayer.destroy === 'function') {
+        try { previewYtPlayer.destroy(); } catch (err) {}
+      }
+
+      previewYtPlayer = null;
+
+      if (previewEmpty) previewEmpty.style.display = 'flex';
+      if (previewPlayer) previewPlayer.style.display = 'none';
+      if (previewWeb) {
+        previewWeb.src = '';
+        previewWeb.style.display = 'none';
+      }
+      if (previewQuizArea) previewQuizArea.style.display = 'none';
+      if (previewStartButton) previewStartButton.style.display = 'none';
+      if (previewEndBox) previewEndBox.classList.add('d-none');
+    }
+
+    function previewToast(message) {
+      const toast = document.getElementById('previewToast');
+      if (!toast) return;
+
+      clearTimeout(toast.timer);
+      toast.innerText = message;
+      toast.classList.add('show');
+      toast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function splitPreviewValue(value, separator) {
+      return (value || '').toString().split(separator).map(item => item.trim()).filter(Boolean);
+    }
+
+    function getPreviewMissionSource(detail) {
+      return String(detail.source || detail.id || detail.videoId || detail.sumber || '').trim();
+    }
+
+    async function viewMission(missionId) {
+      const owner = requireLoggedInOwner();
+      if (!owner) return;
+
+      try {
+        const detail = await callApi('getMissionDetail', { ...owner, missionId });
+        openMissionPreview(detail);
+      } catch (err) {
+        showMessage('Gagal membuka preview misi: ' + (err.message || err), 'danger');
+      }
+    }
+
+    function openMissionPreview(detail) {
+      stopMissionPreview();
+      previewMission = detail;
+      previewQuestions = parsePreviewQuestions(detail);
+      previewIndex = 0;
+      previewActiveQuestionTime = null;
+      previewQuestionTriggered = false;
+      previewLastPlaybackTime = 0;
+      previewCurrentQuestionIndex = -1;
+      previewSourceType = '';
+
+      document.getElementById('previewMissionTitle').innerText = detail.judul || 'Preview Misi';
+      document.getElementById('previewMissionSubtitle').innerText = (detail.kelas ? 'Kelas ' + detail.kelas : '-') + ' - ' + (detail.kategori || '-');
+      document.getElementById('previewQuestionText').innerText = '';
+      document.getElementById('previewOptionContainer').innerHTML = '';
+      document.getElementById('previewQuizArea').style.display = 'none';
+      document.getElementById('previewEndBox').classList.add('d-none');
+      document.getElementById('previewStartButton').style.display = 'none';
+      document.getElementById('previewEmpty').style.display = 'flex';
+
+      showMissionPreviewPanel();
+      loadMissionPreviewContent();
+    }
+
+    function parsePreviewQuestions(detail) {
+      const stops = splitPreviewValue(detail.detik, ',').map(Number);
+      const questionTexts = splitPreviewValue(detail.pertanyaan, '|');
+      const optionGroups = splitPreviewValue(detail.jawaban, '|').map(group => splitPreviewValue(group, ','));
+      const answers = splitPreviewValue(detail.kunci, '|');
+
+      return questionTexts.map((question, index) => ({
+        time: Number(stops[index]) || 0,
+        question,
+        options: optionGroups[index] || [],
+        answer: answers[index] || ''
+      })).filter(item => item.question);
+    }
+
+    function loadMissionPreviewContent() {
+      const source = getPreviewMissionSource(previewMission || {});
+      const videoId = extractYouTubeId(source);
+      const previewEmpty = document.getElementById('previewEmpty');
+      const previewWeb = document.getElementById('previewWeb');
+      const previewPlayer = document.getElementById('previewPlayer');
+
+      previewEmpty.style.display = 'none';
+      previewWeb.style.display = 'none';
+      previewPlayer.style.display = 'none';
+
+      if (videoId) {
+        previewSourceType = 'youtube';
+        previewPlayer.style.display = 'block';
+        ensureYouTubeApiLoaded();
+        createOrLoadPreviewPlayer(videoId);
+        return;
+      }
+
+      previewSourceType = 'web';
+      previewWeb.src = source;
+      previewWeb.style.display = 'block';
+      document.getElementById('previewStartButton').style.display = previewQuestions.length ? 'block' : 'none';
+      previewToast('Preview web dimuat.');
+    }
+
+    function createOrLoadPreviewPlayer(videoId, attempts = 0) {
+      if (!previewYtReady || !window.YT || !window.YT.Player) {
+        if (attempts > 40) {
+          previewToast('Preview YouTube gagal dimuat.');
+          document.getElementById('previewEmpty').style.display = 'flex';
+          document.getElementById('previewPlayer').style.display = 'none';
+          return;
+        }
+
+        setTimeout(() => createOrLoadPreviewPlayer(videoId, attempts + 1), 250);
+        return;
+      }
+
+      previewQuestionTriggered = false;
+      previewLastPlaybackTime = 0;
+      previewCurrentQuestionIndex = -1;
+
+      if (previewYtPlayer && typeof previewYtPlayer.loadVideoById === 'function') {
+        previewYtPlayer.loadVideoById(videoId);
+      } else {
+        previewYtPlayer = new YT.Player('previewPlayer', {
+          videoId,
+          width: '100%',
+          height: '340',
+          playerVars: { rel: 0, modestbranding: 1 },
+          events: { onReady: startPreviewTicker, onStateChange: handlePreviewPlayerState }
+        });
+      }
+
+      startPreviewTicker();
+      document.getElementById('previewStartButton').style.display = 'none';
+    }
+
+    function startPreviewTicker() {
+      if (previewTicker) clearInterval(previewTicker);
+      previewTicker = setInterval(() => {
+        if (previewSourceType !== 'youtube' || !previewYtPlayer || typeof previewYtPlayer.getCurrentTime !== 'function') return;
+        document.getElementById('currentTimeText').innerText = formatTime(previewYtPlayer.getCurrentTime());
+      }, 350);
+    }
+
+    function handlePreviewPlayerState(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        let timer = setInterval(() => {
+          if (!previewYtPlayer || typeof previewYtPlayer.getPlayerState !== 'function' || previewYtPlayer.getPlayerState() !== 1) {
+            clearInterval(timer);
+            return;
+          }
+
+          const currentTime = Number(previewYtPlayer.getCurrentTime()) || 0;
+          if (previewActiveQuestionTime !== null && currentTime < previewActiveQuestionTime - 0.5) {
+            previewQuestionTriggered = false;
+            previewActiveQuestionTime = null;
+            previewCurrentQuestionIndex = -1;
+          }
+
+          const nextQuestionIndex = previewQuestions.findIndex(question => previewLastPlaybackTime < question.time && currentTime >= question.time);
+          if (nextQuestionIndex !== -1 && !previewQuestionTriggered) {
+            const current = previewQuestions[nextQuestionIndex];
+            previewQuestionTriggered = true;
+            previewActiveQuestionTime = current.time;
+            previewCurrentQuestionIndex = nextQuestionIndex;
+            previewYtPlayer.pauseVideo();
+            openPreviewQuestion(nextQuestionIndex);
+            clearInterval(timer);
+          }
+
+          previewLastPlaybackTime = currentTime;
+        }, 400);
+      }
+
+      if (event.data === YT.PlayerState.ENDED) {
+        finishPreviewMission();
+      }
+    }
+
+    function openPreviewQuestion(questionIndex = previewCurrentQuestionIndex) {
+      const current = previewQuestions[questionIndex];
+      if (!current) {
+        finishPreviewMission();
+        return;
+      }
+
+      if (previewQuestionTriggered && previewActiveQuestionTime !== null && current.time !== previewActiveQuestionTime) {
+        return;
+      }
+
+      document.getElementById('previewQuizArea').style.display = 'block';
+      document.getElementById('previewStartButton').style.display = 'none';
+      document.getElementById('previewQuestionText').innerText = current.question;
+
+      const optionBox = document.getElementById('previewOptionContainer');
+      optionBox.innerHTML = '';
+
+      if (current.options.some(option => option && option.trim())) {
+        current.options.forEach(option => {
+          if (!option || !option.trim()) return;
+          const item = document.createElement('div');
+          item.style = 'background:#f8f9fa; border:3px solid var(--hero-purple); padding:12px; border-radius:15px; cursor:pointer; font-weight:900; margin-bottom:8px;';
+          item.innerText = option.trim();
+          optionBox.appendChild(item);
+        });
+      } else {
+        optionBox.innerHTML = '<input type="text" class="input-power" placeholder="Ketik jawabanmu..." readonly value="Mode preview hanya menampilkan pertanyaan">';
+      }
+    }
+
+    function previewOpenQuestion() {
+      openPreviewQuestion(previewCurrentQuestionIndex);
+    }
+
+    function previewSubmitAnswer() {
+      previewToast('Mode preview tidak menyimpan jawaban atau skor.');
+      document.getElementById('previewQuizArea').style.display = 'none';
+      previewQuestionTriggered = false;
+      previewActiveQuestionTime = null;
+      previewCurrentQuestionIndex = -1;
+      const currentTime = previewSourceType === 'youtube' && previewYtPlayer && typeof previewYtPlayer.getCurrentTime === 'function'
+        ? Number(previewYtPlayer.getCurrentTime()) || 0
+        : previewLastPlaybackTime;
+      previewLastPlaybackTime = currentTime;
+
+      if (previewSourceType === 'web') {
+        document.getElementById('previewStartButton').style.display = 'block';
+      } else if (previewYtPlayer && typeof previewYtPlayer.playVideo === 'function') {
+        previewYtPlayer.playVideo();
+      }
+    }
+
+    function finishPreviewMission() {
+      document.getElementById('previewQuizArea').style.display = 'none';
+      document.getElementById('previewStartButton').style.display = 'none';
+      document.getElementById('previewEndBox').classList.remove('d-none');
+    }
+
+    function getYoutubeId(value) {
+      const source = String(value || '').trim();
+      if (!source) return '';
+      if (/^[a-zA-Z0-9_-]{11}$/.test(source)) return source;
+
+      const patterns = [
+        /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+        /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+      ];
+
+      for (const pattern of patterns) {
+        const match = source.match(pattern);
+        if (match) return match[1];
+      }
+
+      try {
+        const url = new URL(source);
+        if (url.hostname.includes('youtu.be')) return url.pathname.replace('/', '').slice(0, 11);
+        if (url.hostname.includes('youtube.com')) return url.searchParams.get('v') || url.pathname.split('/').pop();
+      } catch (err) {
+        return '';
+      }
+
+      return '';
     }
 
     async function editMission(missionId) {
@@ -1709,6 +2948,7 @@
 
     clearQuestionDraft();
     renderQuestionList();
+    restoreCreatorSession();
   </script>
 </body>
 </html>

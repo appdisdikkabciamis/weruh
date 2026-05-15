@@ -26,12 +26,160 @@
     .dashboard-misi {
         padding: 30px 0;
     }
-    .mission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+    .mission-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
     .mission-item {
         background: white; border: 4px solid var(--hero-purple); padding: 20px;
         border-radius: 20px; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 0 var(--hero-purple); text-align: center;
     }
     .mission-item:hover { transform: translateY(-5px); background: var(--hero-gold); }
+
+    .mission-filter-panel {
+        display: none;
+        gap: 12px;
+        grid-template-columns: repeat(4, minmax(150px, 1fr));
+        margin: 18px auto 0;
+        max-width: 1100px;
+        width: 100%;
+    }
+
+    .mission-filter-panel select {
+        appearance: auto;
+        background: white;
+        border: 4px solid var(--hero-purple);
+        border-radius: 16px;
+        box-shadow: 0 5px 0 var(--hero-dark);
+        color: var(--hero-purple);
+        cursor: pointer;
+        font-family: 'Nunito', sans-serif;
+        font-size: 17px;
+        font-weight: 900;
+        padding: 12px 14px;
+        width: 100%;
+    }
+
+    .mission-entry-summary {
+        color: white;
+        display: none;
+        font-weight: 900;
+        margin-top: 14px;
+        text-align: center;
+        text-shadow: 2px 2px 0 var(--hero-dark);
+    }
+
+    .player-drawer-btn {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        border: 3px solid var(--hero-purple);
+        border-radius: 16px;
+        box-shadow: 0 5px 0 var(--hero-purple);
+        color: var(--hero-purple);
+        cursor: pointer;
+        display: none;
+        font-family: 'Bangers', cursive;
+        font-size: 18px;
+        gap: 8px;
+        padding: 10px 14px;
+        position: fixed;
+        right: 16px;
+        top: 16px;
+        z-index: 9999;
+    }
+
+    .player-drawer-btn:hover {
+        background: #fff8b8;
+        color: var(--hero-purple);
+    }
+
+    .mission-pagination {
+        align-items: center;
+        display: none;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 18px;
+    }
+
+    .mission-pagination button {
+        background: white;
+        border: 3px solid var(--hero-purple);
+        border-radius: 14px;
+        box-shadow: 0 5px 0 var(--hero-purple);
+        color: var(--hero-purple);
+        font-family: 'Bangers', cursive;
+        font-size: 18px;
+        padding: 10px 14px;
+        transition: 0.1s;
+    }
+
+    .mission-pagination button:hover:not(:disabled) {
+        background: var(--hero-gold);
+    }
+
+    .mission-pagination button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+
+    .mission-pagination .page-indicator {
+        color: white;
+        font-weight: 900;
+        padding: 0 8px;
+        text-shadow: 2px 2px 0 var(--hero-dark);
+    }
+
+    .mission-loading {
+        align-items: center;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        grid-column: 1 / -1;
+        justify-content: center;
+        min-height: 230px;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .mission-loading-spinner {
+        animation: missionSpin 1s linear infinite;
+        border: 8px solid rgba(255, 255, 255, 0.35);
+        border-top-color: var(--hero-gold);
+        border-right-color: white;
+        border-radius: 50%;
+        height: 76px;
+        width: 76px;
+    }
+
+    .mission-loading-title {
+        font-family: 'Bangers', cursive;
+        font-size: 34px;
+        letter-spacing: 1px;
+        margin: 0;
+        text-shadow: 3px 3px 0 var(--hero-dark), 0 0 18px rgba(255,215,0,0.45);
+    }
+
+    .mission-loading-dots span {
+        animation: missionBounce 0.9s ease-in-out infinite;
+        background: var(--hero-gold);
+        border: 3px solid white;
+        border-radius: 50%;
+        display: inline-block;
+        height: 15px;
+        margin: 0 4px;
+        width: 15px;
+    }
+
+    .mission-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .mission-loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes missionSpin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes missionBounce {
+        0%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+    }
 
     .mission-preview {
         align-items: center;
@@ -227,12 +375,20 @@
             width: 92%;
             padding: 20px;
         }
+
+        .mission-filter-panel {
+            grid-template-columns: 1fr;
+        }
+        .mission-grid {
+            grid-template-columns: 1fr;
+        }
     }
   </style>
 </head>
 <body onload="initApp()">
 
 <a id="backHomeLink" class="back-home-btn" href="index.html">⬅ KEMBALI</a>
+<button id="playerDashboardBtn" class="player-drawer-btn" type="button" onclick="openPlayerDashboard()">👤 <span id="playerDashboardName">PEMAIN</span></button>
 
 <audio id="snd-bg" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg"></audio>
 <audio id="snd-benar"><source src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" type="audio/mpeg"></audio>
@@ -242,21 +398,42 @@
 <div class="app-container">
   
   <div id="login-ui" class="card-login">
-    <div style="font-size: 70px;">🛡️</div>
+    <div style="font-size: 70px;">👤</div>
     <h1 style="font-family:'Bangers'; font-size: 40px; color:var(--hero-purple); margin: 10px 0;">PAHLAWAN GALUH</h1>
     <div id="selected-mission-name" style="font-weight:900; color:var(--hero-purple); margin-bottom:15px;"></div>
-    <input type="text" id="nama" class="input-power" placeholder="NAMA AGEN...">
-    <input type="email" id="absen" class="input-power" placeholder="EMAIL PEMAIN..." readonly>
-    <input type="text" id="kelas-select" class="input-power" placeholder="KELAS..." readonly>
+    <input type="text" id="nama" class="input-power" placeholder="NAMA AGEN..." readonly>
+    <input type="email" id="absen" class="input-power" placeholder="EMAIL PEMAIN..." readonly style="display:none;">
+    <input type="text" id="kelas-select" class="input-power" placeholder="KELAS..." readonly style="display:none;">
     <button class="btn-hero" style="width:100%" onclick="masuk()">AKTIFKAN MISI! ⚡</button>
     <button class="btn-hero" style="width:100%; background:#95a5a6; color:white; margin-top:12px;" onclick="kembaliKePilihanMisi()">PILIH MISI LAIN</button>
   </div>
 
   <div id="selection-ui" class="dashboard-misi">
     <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 10px;">
-        <h2 style="margin:0; font-family:'Bangers'; color:white; font-size: 44px; text-shadow: 3px 3px 0 var(--hero-dark), 0 0 18px rgba(255,215,0,0.45);">PILIH MISIMU!</h2>
+        <h2 id="missionSelectionTitle" style="display:none; margin:0; font-family:'Bangers'; color:white; font-size: 44px; text-shadow: 3px 3px 0 var(--hero-dark), 0 0 18px rgba(255,215,0,0.45);">PILIH MISIMU!</h2>
     </div>
+    <div id="missionFilterPanel" class="mission-filter-panel">
+      <select id="kelasFilter" onchange="resetMissionFiltersAndRender()" aria-label="Filter kelas">
+        <option value="">Semua Kelas</option>
+      </select>
+      <select id="kategoriFilter" onchange="resetMissionFiltersAndRender()" aria-label="Filter kategori">
+        <option value="">Semua Kategori</option>
+      </select>
+      <select id="entryLimit" onchange="resetMissionFiltersAndRender()" aria-label="Jumlah entri ditampilkan">
+        <option value="9">Tampilkan 9 entri</option>
+        <option value="18">Tampilkan 18 entri</option>
+        <option value="27">Tampilkan 27 entri</option>
+        <option value="24">Tampilkan 24 entri</option>
+        <option value="all">Tampilkan semua</option>
+      </select>
+      <select id="sortFilter" onchange="resetMissionFiltersAndRender()" aria-label="Urutkan misi">
+        <option value="newest">Misi terbaru</option>
+        <option value="popular">Paling banyak dimainkan</option>
+      </select>
+    </div>
+    <div id="missionEntrySummary" class="mission-entry-summary"></div>
     <div id="daftar-misi" class="mission-grid"></div>
+    <div id="missionPagination" class="mission-pagination"></div>
   </div>
 
   <div id="mission-ui">
@@ -304,6 +481,7 @@
   document.getElementById('backHomeLink').href = resolvePageUrl('index');
 
   let ytPlayer, misiData = [], misiAktif, currentPlayer = null, selectedMissionIndex = -1, idxS=0, skor=0, terpilih="";
+  let missionPage = 1;
   const bgm = document.getElementById('snd-bg');
   const API_URL = 'https://script.google.com/macros/s/AKfycbxC-h4iAIq9yCSddf4XUbuDYRfVlGKC_jLzgHgD_nDiSdNptAKdti9PIs1XdhXLyDKhHQ/exec';
 
@@ -346,12 +524,28 @@
     }
 
     try {
+      showMissionLoading();
       const res = await callApi('getSemuaMisi');
       misiData = res || [];
+      setupMissionFilters();
       renderDaftarMisi();
     } catch (err) {
       alert('Gagal memuat daftar misi: ' + (err.message || err));
     }
+  }
+
+  function showMissionLoading() {
+    document.getElementById('missionSelectionTitle').style.display = 'none';
+    document.getElementById('missionFilterPanel').style.display = 'none';
+    document.getElementById('missionEntrySummary').style.display = 'none';
+    document.getElementById('missionPagination').style.display = 'none';
+    document.getElementById('daftar-misi').innerHTML = `
+      <div class="mission-loading" role="status" aria-live="polite">
+        <div class="mission-loading-spinner"></div>
+        <h3 class="mission-loading-title">MEMUAT DAFTAR MISI</h3>
+        <div class="mission-loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    `;
   }
 
   async function bukaMisiLangsung(missionId) {
@@ -384,15 +578,113 @@
 
   function renderDaftarMisi() {
     const box = document.getElementById('daftar-misi');
+    const summary = document.getElementById('missionEntrySummary');
+    const pagination = document.getElementById('missionPagination');
+    document.getElementById('missionSelectionTitle').style.display = 'block';
+    document.getElementById('missionFilterPanel').style.display = 'grid';
+    summary.style.display = 'block';
+    pagination.style.display = 'none';
     if (!misiData.length) {
+      summary.innerText = 'Menampilkan 0 entri';
       box.innerHTML = '<p style="font-weight:900; color:var(--hero-purple); text-align:center; grid-column:1/-1;">Belum ada misi yang tersedia.</p>';
       return;
     }
 
-    box.innerHTML = "";
-    misiData.forEach((v, i) => {
-      box.innerHTML += `<div class="mission-item">${renderMissionPreview(v)}<h3 style="font-family:Bangers; color:var(--hero-purple);">${escapeHtml(String(v.judul || 'Misi'))}</h3><p style="font-weight:900; margin:8px 0;">Kelas ${escapeHtml(String(v.kelas || '-'))} - ${escapeHtml(String(v.kategori || '-'))}</p><button class="btn-hero" type="button" onclick="mulaiPilihMisi(${i})">MAIN</button></div>`;
+    const selectedKelas = document.getElementById('kelasFilter').value;
+    const selectedKategori = document.getElementById('kategoriFilter').value;
+    const entryLimit = document.getElementById('entryLimit').value;
+    const sortMode = document.getElementById('sortFilter').value;
+    const filteredMissions = misiData.filter(mission => {
+      const kelasMatch = !selectedKelas || String(mission.kelas || '') === selectedKelas;
+      const kategoriMatch = !selectedKategori || String(mission.kategori || '') === selectedKategori;
+      return kelasMatch && kategoriMatch;
+    }).sort((a, b) => {
+      if (sortMode === 'popular') {
+        const playDiff = (Number(b.jumlahDimainkan) || 0) - (Number(a.jumlahDimainkan) || 0);
+        if (playDiff !== 0) return playDiff;
+      }
+
+      return String(b.dibuatPada || '').localeCompare(String(a.dibuatPada || ''));
     });
+
+    if (!filteredMissions.length) {
+      summary.innerText = 'Menampilkan 0 dari 0 entri';
+      box.innerHTML = '<p style="font-weight:900; color:white; text-align:center; grid-column:1/-1; text-shadow:2px 2px 0 var(--hero-dark);">Tidak ada misi untuk filter ini.</p>';
+      return;
+    }
+
+    const entriesPerPage = entryLimit === 'all' ? filteredMissions.length : Number(entryLimit) || 9;
+    const totalPages = entryLimit === 'all' ? 1 : Math.max(1, Math.ceil(filteredMissions.length / entriesPerPage));
+    if (missionPage > totalPages) missionPage = totalPages;
+    if (missionPage < 1) missionPage = 1;
+
+    const startIndex = (missionPage - 1) * entriesPerPage;
+    const visibleMissions = filteredMissions.slice(startIndex, startIndex + entriesPerPage);
+    const startLabel = startIndex + 1;
+    const endLabel = Math.min(startIndex + visibleMissions.length, filteredMissions.length);
+    summary.innerText = `Menampilkan ${startLabel}-${endLabel} dari ${filteredMissions.length} entri | Halaman ${missionPage} dari ${totalPages}`;
+
+    box.innerHTML = "";
+    visibleMissions.forEach((v) => {
+      const originalIndex = misiData.indexOf(v);
+      box.innerHTML += `<div class="mission-item">${renderMissionPreview(v)}<h3 style="font-family:Bangers; color:var(--hero-purple); font-size:32px; line-height:1.05; margin:10px 0 8px;">${escapeHtml(String(v.judul || 'Misi'))}</h3><p style="font-weight:900; margin:8px 0;">Kelas ${escapeHtml(String(v.kelas || '-'))} - ${escapeHtml(String(v.kategori || '-'))}</p><p style="font-weight:900; margin:0 0 4px; color:var(--hero-purple);">Kreator: ${escapeHtml(String(v.namaKreator || '-'))}</p><p style="font-weight:900; margin:0 0 6px; color:var(--hero-purple);">${escapeHtml(String(v.namaSekolahKreator || '-'))} - ${escapeHtml(String(v.kecamatanKreator || '-'))}</p><p style="font-weight:900; margin:0 0 12px; color:#6f687c;">Dimainkan: ${escapeHtml(String(v.jumlahDimainkan || 0))} kali</p><button class="btn-hero" type="button" onclick="mulaiPilihMisi(${originalIndex})">MAIN</button></div>`;
+    });
+
+    renderMissionPagination(totalPages);
+  }
+
+  function renderMissionPagination(totalPages) {
+    const pagination = document.getElementById('missionPagination');
+    if (totalPages <= 1) {
+      pagination.innerHTML = '';
+      pagination.style.display = 'none';
+      return;
+    }
+
+    const currentPage = missionPage;
+    const pageButtons = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageButtons.push(`<button type="button" ${i === currentPage ? 'disabled' : ''} onclick="goToMissionPage(${i})">${i}</button>`);
+      }
+    } else {
+      const pages = new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1]);
+      [...pages].filter(page => page >= 1 && page <= totalPages).sort((a, b) => a - b).forEach((page, index, arr) => {
+        if (index > 0 && page - arr[index - 1] > 1) pageButtons.push('<span class="page-indicator">...</span>');
+        pageButtons.push(`<button type="button" ${page === currentPage ? 'disabled' : ''} onclick="goToMissionPage(${page})">${page}</button>`);
+      });
+    }
+
+    pagination.innerHTML = `
+      <button type="button" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToMissionPage(${currentPage - 1})">Sebelumnya</button>
+      ${pageButtons.join('')}
+      <button type="button" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToMissionPage(${currentPage + 1})">Selanjutnya</button>
+    `;
+    pagination.style.display = 'flex';
+  }
+
+  function goToMissionPage(page) {
+    missionPage = Math.max(1, page);
+    renderDaftarMisi();
+  }
+
+  function resetMissionFiltersAndRender() {
+    missionPage = 1;
+    renderDaftarMisi();
+  }
+
+  function setupMissionFilters() {
+    const kelasFilter = document.getElementById('kelasFilter');
+    const kategoriFilter = document.getElementById('kategoriFilter');
+    const selectedKelas = kelasFilter.value;
+    const selectedKategori = kategoriFilter.value;
+    const kelasOptions = [...new Set(misiData.map(mission => String(mission.kelas || '').trim()).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+    const kategoriOptions = [...new Set(misiData.map(mission => String(mission.kategori || '').trim()).filter(Boolean))].sort();
+
+    kelasFilter.innerHTML = '<option value="">Semua Kelas</option>' + kelasOptions.map(kelas => `<option value="${escapeHtml(kelas)}">Kelas ${escapeHtml(kelas)}</option>`).join('');
+    kategoriFilter.innerHTML = '<option value="">Semua Kategori</option>' + kategoriOptions.map(kategori => `<option value="${escapeHtml(kategori)}">${escapeHtml(kategori)}</option>`).join('');
+    kelasFilter.value = kelasOptions.includes(selectedKelas) ? selectedKelas : '';
+    kategoriFilter.value = kategoriOptions.includes(selectedKategori) ? selectedKategori : '';
   }
 
   function mulaiPilihMisi(index) {
@@ -416,6 +708,26 @@
     } catch (err) {
       currentPlayer = null;
     }
+
+    updatePlayerDashboardButton();
+  }
+
+  function updatePlayerDashboardButton() {
+    const btn = document.getElementById('playerDashboardBtn');
+    const name = document.getElementById('playerDashboardName');
+    if (!btn || !name) return;
+
+    const selectionVisible = document.getElementById('selection-ui').style.display !== 'none';
+    if (currentPlayer && currentPlayer.email && selectionVisible) {
+      name.innerText = currentPlayer.namaLengkap || currentPlayer.email;
+      btn.style.display = 'flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  function openPlayerDashboard() {
+    window.location.href = resolvePageUrl('dashboard-pemain');
   }
 
   function renderMissionPreview(mission) {
@@ -456,12 +768,14 @@
     document.getElementById('kelas-select').value = mission.kelas || '';
     document.getElementById('selection-ui').style.display = 'none';
     document.getElementById('login-ui').style.display = 'block';
+    document.getElementById('playerDashboardBtn').style.display = 'none';
     setBackHomeVisible(false);
   }
 
   function kembaliKePilihanMisi() {
     document.getElementById('login-ui').style.display = 'none';
     document.getElementById('selection-ui').style.display = 'block';
+    updatePlayerDashboardButton();
     selectedMissionIndex = -1;
     document.getElementById('nama').value = '';
     document.getElementById('absen').value = '';
@@ -486,6 +800,7 @@ function gasMisi(i) {
 
     document.getElementById('selection-ui').style.display = 'none';
     document.getElementById('mission-ui').style.display = 'block';
+    document.getElementById('playerDashboardBtn').style.display = 'none';
     setBackHomeVisible(false);
     document.getElementById('judul-misi-aktif').innerText = misiAktif.judul;
     
@@ -685,6 +1000,7 @@ async function misiSelesai() {
     document.getElementById('final-ui').style.display = 'none';
     document.getElementById('selection-ui').style.display = 'block';
     document.getElementById('login-ui').style.display = 'none';
+    updatePlayerDashboardButton();
     selectedMissionIndex = -1;
     setBackHomeVisible(true);
     
@@ -706,6 +1022,7 @@ function keluar() {
     document.getElementById('final-ui').style.display = 'none';
     document.getElementById('login-ui').style.display = 'none';
     document.getElementById('selection-ui').style.display = 'block';
+    updatePlayerDashboardButton();
     selectedMissionIndex = -1;
     setBackHomeVisible(true);
   }
