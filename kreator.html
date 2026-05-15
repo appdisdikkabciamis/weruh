@@ -1861,11 +1861,7 @@
       const email = owner && owner.emailPembuat ? owner.emailPembuat : '';
       if (!email) return null;
 
-      try {
-        creatorProfile = normalizeCreatorProfile(await callApi('getCreatorProfile', { emailPembuat: email }), email);
-      } catch (err) {
-        creatorProfile = normalizeCreatorProfile(null, email);
-      }
+      creatorProfile = normalizeCreatorProfile(await callApi('getCreatorProfile', { emailPembuat: email }), email);
 
       saveCreatorSession({ emailPembuat: email, profile: creatorProfile });
       renderCreatorProfile(creatorProfile);
@@ -1965,16 +1961,23 @@
       const owner = validateOwnerFields();
       if (!owner) return;
 
-      loggedInOwner = owner;
-      creatorProfile = null;
-      saveCreatorSession(owner);
-      document.body.classList.remove('login-mode');
-      document.getElementById('emailPembuatInput').value = owner.emailPembuat;
-      updateCreatorDashboard(owner);
-      await loadCreatorProfile(owner);
-      showOwnerMessage('Login sebagai: ' + owner.emailPembuat, 'success');
-      showMissionDashboard();
-      await loadMyMissions();
+      try {
+        creatorProfile = null;
+        loggedInOwner = owner;
+        document.getElementById('emailPembuatInput').value = owner.emailPembuat;
+        await loadCreatorProfile(owner);
+        saveCreatorSession({ emailPembuat: owner.emailPembuat, profile: creatorProfile });
+        document.body.classList.remove('login-mode');
+        updateCreatorDashboard(owner);
+        showOwnerMessage('Login sebagai: ' + owner.emailPembuat, 'success');
+        showMissionDashboard();
+        await loadMyMissions();
+      } catch (err) {
+        loggedInOwner = null;
+        creatorProfile = null;
+        clearCreatorSession();
+        showOwnerMessage('Email kreator belum terdaftar. Silakan daftar kreator terlebih dahulu.', 'danger');
+      }
     }
 
     function logoutCreator() {
@@ -2024,8 +2027,13 @@
       creatorProfile = normalizeCreatorProfile(savedOwner.profile, savedOwner.emailPembuat);
       renderCreatorProfile(creatorProfile);
       showMissionDashboard();
-      await loadCreatorProfile(loggedInOwner);
-      await loadMyMissions();
+      try {
+        await loadCreatorProfile(loggedInOwner);
+        await loadMyMissions();
+      } catch (err) {
+        logoutCreator();
+        showOwnerMessage('Sesi kreator tidak valid. Silakan login dengan email yang sudah terdaftar.', 'danger');
+      }
     }
 
     function showMissionEditor(mode) {
