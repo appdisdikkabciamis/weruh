@@ -22,18 +22,15 @@
 
     body {
       align-items: center;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(255, 215, 0, 0.16), transparent 18%),
-        radial-gradient(circle at 80% 18%, rgba(0, 210, 255, 0.14), transparent 18%),
-        radial-gradient(circle at 75% 82%, rgba(255, 71, 87, 0.12), transparent 16%),
-        radial-gradient(circle at top, #2e2354 0%, #1b1638 45%, #0a0b1a 100%);
+      background: url('bg.jpg') center/cover no-repeat, radial-gradient(circle, #a49fd1 0%, #51497f 100%);
       color: white;
       display: flex;
       font-family: "Nunito", sans-serif;
       justify-content: center;
       margin: 0;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       padding: 16px;
       position: relative;
     }
@@ -49,14 +46,12 @@
 
     body::before {
       background:
-        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.22) 0 2px, transparent 3px),
-        radial-gradient(circle at 84% 26%, rgba(255,255,255,0.18) 0 2px, transparent 3px),
-        radial-gradient(circle at 30% 80%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
-        radial-gradient(circle at 72% 70%, rgba(255,255,255,0.18) 0 2px, transparent 3px),
-        radial-gradient(circle at 45% 35%, rgba(255,255,255,0.08) 0 1px, transparent 2px),
-        radial-gradient(circle at 62% 58%, rgba(255,255,255,0.08) 0 1px, transparent 2px);
-      animation: twinkle 8s ease-in-out infinite alternate;
-      opacity: 0.8;
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,0.15) 0 40px, transparent 50px),
+        radial-gradient(circle at 18% 25%, rgba(255,255,255,0.1) 0 30px, transparent 40px),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12) 0 50px, transparent 60px),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 0 35px, transparent 45px);
+      animation: floatClouds 12s ease-in-out infinite alternate;
+      opacity: 0.9;
     }
 
     body::after {
@@ -69,9 +64,9 @@
       animation: floatGlow 12s ease-in-out infinite alternate;
     }
 
-    @keyframes twinkle {
-      from { transform: scale(1); opacity: 0.55; }
-      to { transform: scale(1.04); opacity: 0.95; }
+    @keyframes floatClouds {
+      from { transform: translateX(0) scale(1); opacity: 0.6; }
+      to { transform: translateX(15px) scale(1.02); opacity: 0.9; }
     }
 
     @keyframes floatGlow {
@@ -79,51 +74,29 @@
       to { transform: translateY(-12px); }
     }
 
-    .space-rocket {
+    .sunda-anim {
       position: fixed;
       z-index: 0;
-      font-size: clamp(28px, 4vw, 42px);
-      filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.55));
+      font-size: clamp(40px, 6vw, 60px);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
       pointer-events: none;
-      animation-timing-function: linear;
+      animation-timing-function: ease-in-out;
       animation-iteration-count: infinite;
-      transform: translate(-20vw, 0) rotate(-10deg);
+      animation-direction: alternate;
     }
 
-    .rocket-1 {
-      top: 16%;
+    .anim-kite {
+      top: 15%;
       left: -10vw;
-      animation: rocketFlight1 11s linear infinite;
+      animation: kiteFlight 18s linear infinite normal;
     }
 
-    .rocket-trail {
-      position: fixed;
-      width: 120px;
-      height: 4px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255, 215, 0, 0.75), rgba(0, 210, 255, 0.65), rgba(255,255,255,0));
-      filter: blur(1px);
-      pointer-events: none;
-      z-index: 0;
-      animation: trailPulse 2s ease-in-out infinite alternate;
-    }
-
-    .trail-1 {
-      top: 18.5%;
-      animation-delay: 0s;
-    }
-
-    @keyframes trailPulse {
-      from { opacity: 0.35; transform: scaleX(0.85); }
-      to { opacity: 0.9; transform: scaleX(1.05); }
-    }
-
-    @keyframes rocketFlight1 {
-      0% { transform: translate(-20vw, 0) rotate(-12deg); }
-      20% { transform: translate(12vw, -10px) rotate(-6deg); }
-      45% { transform: translate(42vw, 10px) rotate(4deg); }
-      70% { transform: translate(74vw, -8px) rotate(10deg); }
-      100% { transform: translate(120vw, 0) rotate(14deg); }
+    @keyframes kiteFlight {
+      0% { transform: translate(-20vw, 10vh) rotate(5deg); }
+      25% { transform: translate(20vw, 0) rotate(-5deg); }
+      50% { transform: translate(60vw, 15vh) rotate(10deg); }
+      75% { transform: translate(90vw, 5vh) rotate(-5deg); }
+      100% { transform: translate(120vw, 10vh) rotate(5deg); }
     }
 
     .home-shell {
@@ -163,45 +136,70 @@
     }
 
     .home-title {
-      color: white;
+      color: var(--hero-gold);
       font-family: "Bangers", cursive;
-      font-size: clamp(38px, 6.2vw, 68px);
-      letter-spacing: 2px;
-      line-height: 1;
+      font-size: clamp(28px, 4.2vw, 54px);
+      letter-spacing: 1.5px;
+      line-height: 1.1;
       margin: 0;
-      text-shadow: 0 0 18px rgba(0, 210, 255, 0.35), 4px 4px 0 rgba(255, 215, 0, 0.4);
+      text-shadow: 3px 3px 0 var(--hero-purple), -2px -2px 0 var(--hero-purple), 2px -2px 0 var(--hero-purple), -2px 2px 0 var(--hero-purple), 2px 2px 0 var(--hero-purple), 6px 6px 0 var(--hero-dark);
+    }
+
+    .welcome-text {
+      display: block;
+      margin-bottom: 4px;
     }
 
     .home-subtitle {
-      color: rgba(255, 255, 255, 0.88);
-      font-size: clamp(15px, 2.2vw, 19px);
+      color: #333333;
+      font-size: clamp(15px, 1.5vw, 22px);
       font-weight: 900;
-      margin: 12px auto 16px;
-      max-width: 720px;
+      margin: 12px auto 0;
+      max-width: 880px;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 0 14px rgba(255, 255, 255, 0.85), 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .menu-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(16px, 1.6vw, 24px);
+      margin-top: 22px;
     }
 
     .menu-card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255,255,255,0.32);
-      border-radius: 28px;
-      box-shadow: 0 12px 0 rgba(0, 0, 0, 0.28);
+      background: linear-gradient(180deg, #d8ac63, #c59345);
+      border: 4px solid #6a4221;
+      border-radius: 12px;
+      box-shadow: 0 6px 0 #543317, 0 8px 8px rgba(0, 0, 0, 0.25);
       color: white;
       display: flex;
-      flex-direction: column;
-      min-height: 176px;
-      padding: 14px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      padding: clamp(8px, 0.9vw, 12px) clamp(22px, 2.4vw, 32px);
+      width: clamp(320px, 32vw, 440px);
+      max-width: 100%;
       text-decoration: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
       animation: cardRise 0.8s cubic-bezier(.2,.8,.2,1) both;
+      position: relative;
+      overflow: hidden;
     }
+
+    .menu-card::before, .menu-card::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      height: 3px;
+      background: rgba(106, 66, 33, 0.2);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    
+    .menu-card::before { top: 8px; }
+    .menu-card::after { bottom: 8px; }
 
     .menu-card:nth-child(1) { animation-delay: 0.08s; }
     .menu-card:nth-child(2) { animation-delay: 0.18s; }
@@ -214,46 +212,36 @@
 
     .menu-card:hover,
     .menu-card:focus {
-      background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.12));
-      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.28);
-      border-color: rgba(255, 255, 255, 0.55);
+      background: linear-gradient(180deg, #e3ba74, #d19f52);
+      box-shadow: 0 3px 0 #543317, 0 4px 4px rgba(0, 0, 0, 0.25);
       outline: none;
-      transform: translateY(4px);
+      transform: translateY(3px);
     }
 
     .menu-icon {
-      font-size: 62px;
       line-height: 1;
-      margin-bottom: 8px;
+      margin: 0 clamp(16px, 1.8vw, 28px) 0 0;
+      filter: drop-shadow(2px 2px 0 #543317);
+      position: relative;
+      z-index: 1;
+    }
+
+    .menu-icon svg {
+      height: clamp(44px, 3.8vw, 58px);
+      width: clamp(44px, 3.8vw, 58px);
     }
 
     .menu-title {
       color: white;
       font-family: "Bangers", cursive;
-      font-size: 28px;
+      font-size: clamp(24px, 2.2vw, 32px);
       letter-spacing: 1px;
-      margin: 0 0 6px;
-      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
-    }
-
-    .menu-text {
-      color: rgba(255,255,255,0.9);
+      margin: 0;
+      text-shadow: 2px 2px 0 #543317, -2px -2px 0 #543317, 2px -2px 0 #543317, -2px 2px 0 #543317, 0 3px 0 rgba(0,0,0,0.3);
       flex: 1;
-      font-size: 14px;
-      font-weight: 900;
-      margin: 0 0 10px;
-    }
-
-    .menu-action {
-      background: linear-gradient(180deg, #ffd700, #ffbf00);
-      border: 3px solid rgba(255,255,255,0.35);
-      border-radius: 16px;
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.28);
-      color: var(--hero-purple);
-      display: inline-block;
-      font-family: "Bangers", cursive;
-      font-size: 18px;
-      padding: 8px 12px;
+      text-align: left;
+      position: relative;
+      z-index: 1;
     }
 
     .guide-panel {
@@ -287,6 +275,7 @@
       font-size: 42px;
       margin: 0 0 16px;
       text-align: center;
+      text-shadow: 2px 2px 0 var(--hero-purple), -1px -1px 0 var(--hero-purple), 1px -1px 0 var(--hero-purple), -1px 1px 0 var(--hero-purple), 1px 1px 0 var(--hero-purple), 4px 4px 0 var(--hero-dark);
     }
 
     .guide-panel p {
@@ -312,9 +301,38 @@
       top: 18px;
     }
 
+    @media (min-width: 861px) and (max-height: 760px) {
+      .home-title {
+        font-size: clamp(26px, 3.6vw, 46px);
+      }
+
+      .home-subtitle {
+        font-size: clamp(14px, 1.25vw, 18px);
+        margin-top: 8px;
+      }
+
+      .menu-grid {
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .menu-card {
+        padding: 6px 22px;
+        width: clamp(300px, 30vw, 400px);
+      }
+
+      .menu-icon svg {
+        height: 44px;
+        width: 44px;
+      }
+
+      .menu-title {
+        font-size: 24px;
+      }
+    }
+
     @media (max-width: 860px) {
-      .space-rocket,
-      .rocket-trail {
+      .sunda-anim {
         opacity: 0.8;
       }
 
@@ -327,9 +345,10 @@
       }
 
       .menu-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 6px;
       }
 
       .home-card {
@@ -338,36 +357,48 @@
 
       .menu-card {
         min-height: auto;
-        padding: 9px 12px;
+        padding: 6px 14px;
+        max-width: 280px;
+        border-width: 3px;
+        border-radius: 10px;
+        box-shadow: 0 4px 0 #543317, 0 6px 6px rgba(0, 0, 0, 0.25);
+      }
+
+      .menu-card::before { top: 6px; height: 2px; }
+      .menu-card::after { bottom: 6px; height: 2px; }
+
+      .menu-card:hover,
+      .menu-card:focus {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #543317, 0 3px 3px rgba(0, 0, 0, 0.25);
       }
 
       .menu-icon {
-        font-size: 34px;
-        margin-bottom: 4px;
+        font-size: 28px;
+        margin: 0 10px 0 0;
       }
 
       .menu-title {
-        font-size: 24px;
-        margin-bottom: 2px;
-      }
-
-      .menu-text {
-        font-size: 12px;
-        margin-bottom: 5px;
-      }
-
-      .menu-action {
         font-size: 16px;
-        padding: 5px 10px;
+        margin: 0;
+        text-shadow: 1.5px 1.5px 0 #543317, -1.5px -1.5px 0 #543317, 1.5px -1.5px 0 #543317, -1.5px 1.5px 0 #543317, 0 2px 0 rgba(0,0,0,0.3);
       }
 
       .home-title {
-        font-size: clamp(30px, 9vw, 48px);
+        font-size: clamp(24px, 7vw, 34px);
+      }
+
+      .title-break {
+        display: none;
+      }
+
+      .subtitle-break {
+        display: none;
       }
 
       .home-subtitle {
         font-size: 12px;
-        margin: 6px auto 8px;
+        margin: 6px auto 0;
       }
 
       .guide-panel {
@@ -391,31 +422,52 @@
   <main class="home-shell">
     <section class="home-card">
       <div class="home-content">
-        <div class="space-rocket rocket-1">🚀</div>
-        <div class="rocket-trail trail-1"></div>
-        <h1 class="home-title">SELAMAT DATANG DI<br>MARKAS BELAJAR INTERAKTIF</h1>
-        <p class="home-subtitle">Pilih ruang yang ingin kamu masuki untuk membuat misi, memainkan misi, atau membaca panduan penggunaan.</p>
+        <img src="terbang.png" class="sunda-anim anim-kite" style="width: clamp(60px, 9vw, 110px); height: auto;" alt="Layangan">
+        <h1 class="home-title"><span class="welcome-text">SELAMAT DATANG DI</span>Wahana Edukasi Rancage Unggul Hebat<br class="title-break"> Berbasis Lokal</h1>
+        <p class="home-subtitle">Sebuah wadah untuk menampung niat baik, kreativitas, dan semangat belajar<br class="subtitle-break"> yang bersumber dari nilai-nilai budaya dan kearifan lokal.</p>
 
         <div class="menu-grid">
           <a id="creatorLink" class="menu-card" href="kreator.html">
-            <div class="menu-icon">🛠️</div>
+            <div class="menu-icon">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="#fff" stroke="#543317" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="20" y="20" width="16" height="16" rx="4"/>
+                <rect x="20" y="46" width="16" height="16" rx="4"/>
+                <rect x="20" y="72" width="16" height="16" rx="4"/>
+                <line x1="50" y1="28" x2="80" y2="28"/>
+                <line x1="50" y1="54" x2="80" y2="54"/>
+                <line x1="50" y1="80" x2="80" y2="80"/>
+              </svg>
+            </div>
             <h2 class="menu-title">RUANG KREATOR</h2>
-            <p class="menu-text">Masuk sebagai kreator untuk membuat dan mengelola misi belajar.</p>
-            <span class="menu-action">MASUK KREATOR</span>
           </a>
 
           <a id="playerLink" class="menu-card" href="game.html">
-            <div class="menu-icon">🎮</div>
+            <div class="menu-icon">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="#fff" stroke="#543317" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 15 35 C 5 35, 5 65, 15 75 C 25 85, 30 75, 35 65 L 65 65 C 70 75, 75 85, 85 75 C 95 65, 95 35, 85 35 C 65 25, 35 25, 15 35 Z" />
+                <line x1="28" y1="46" x2="28" y2="58" />
+                <line x1="22" y1="52" x2="34" y2="52" />
+                <circle cx="68" cy="56" r="5" fill="#543317" stroke="none"/>
+                <circle cx="78" cy="46" r="5" fill="#543317" stroke="none"/>
+              </svg>
+            </div>
             <h2 class="menu-title">RUANG PEMAIN</h2>
-            <p class="menu-text">Mainkan misi, jawab tantangan, dan kumpulkan skor terbaik.</p>
-            <span class="menu-action">MULAI BERMAIN</span>
           </a>
 
           <button class="menu-card" type="button" onclick="toggleGuide()">
-            <div class="menu-icon">📘</div>
+            <div class="menu-icon">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="#fff" stroke="#543317" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 15 25 C 25 20, 40 20, 50 25 L 50 85 C 40 80, 25 80, 15 85 Z" />
+                <path d="M 85 25 C 75 20, 60 20, 50 25 L 50 85 C 60 80, 75 80, 85 85 Z" />
+                <line x1="28" y1="42" x2="40" y2="42" />
+                <line x1="28" y1="56" x2="40" y2="56" />
+                <line x1="28" y1="70" x2="35" y2="70" />
+                <line x1="60" y1="42" x2="72" y2="42" />
+                <line x1="60" y1="56" x2="72" y2="56" />
+                <line x1="60" y1="70" x2="68" y2="70" />
+              </svg>
+            </div>
             <h2 class="menu-title">PANDUAN</h2>
-            <p class="menu-text">Lihat langkah cepat untuk kreator dan pemain sebelum memulai.</p>
-            <span class="menu-action">BUKA PANDUAN</span>
           </button>
         </div>
 
