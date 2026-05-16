@@ -1343,7 +1343,13 @@
       body { padding: 14px 10px; }
       body.login-mode { padding: 20px; }
       body.login-mode .app-shell { min-height: calc(100vh - 40px); }
-      body.login-mode .creator-topbar { align-items: flex-start; flex-direction: row; }
+      body.login-mode .creator-topbar {
+        align-items: flex-start;
+        flex-direction: row;
+        margin-bottom: 18px;
+        position: static;
+      }
+      body.login-mode #quizForm { flex: none; }
       body.login-mode .creator-top-actions { justify-content: flex-end; }
       body.login-mode .creator-topbar .back-home-btn { width: auto; }
       .creator-topbar { align-items: stretch; flex-direction: column; }
