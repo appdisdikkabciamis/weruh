@@ -107,11 +107,11 @@
       width: 100%;
     }
 
-    body.login-mode.district-dashboard-mode #quizForm {
+    body.district-dashboard-mode #quizForm {
       display: none;
     }
 
-    body.login-mode:not(.district-dashboard-mode) #districtDashboardPage {
+    body:not(.district-dashboard-mode) #districtDashboardPage {
       display: none;
     }
 
@@ -2102,7 +2102,7 @@
       const box = document.getElementById('districtDashboardBox');
       const button = document.getElementById('districtDashboardButton');
 
-      document.body.classList.add('login-mode', 'district-dashboard-mode');
+      document.body.classList.add('district-dashboard-mode');
       box.innerHTML = '<div class="empty-state">Memuat data kecamatan...</div>';
       if (button) {
         button.disabled = true;
